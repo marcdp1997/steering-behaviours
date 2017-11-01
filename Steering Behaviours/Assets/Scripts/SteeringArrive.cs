@@ -5,6 +5,7 @@ using UnityEngine;
 public class SteeringArrive : MonoBehaviour {
 
     public float max_force;
+    public float stop_area_radius;
     public float slow_area_radius;
 
     private Move move;
@@ -34,12 +35,14 @@ public class SteeringArrive : MonoBehaviour {
         Vector3 steering = desired_velocity - move.GetVelocity();
         steering = steering.normalized * max_force;
 
-        move.AddSteeringForce(steering);
+        if (distance < stop_area_radius) move.SetVelocity(Vector3.zero);
+        else move.AddSteeringForce(steering);
     }
 
     void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(move.target.transform.position, slow_area_radius);
+        Gizmos.DrawWireSphere(move.target.transform.position, stop_area_radius);
     }
 }

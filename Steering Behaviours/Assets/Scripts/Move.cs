@@ -20,6 +20,11 @@ public class Move : MonoBehaviour {
         return velocity;
     }
 
+    public void SetVelocity(Vector3 new_velocity)
+    {
+        velocity = new_velocity;
+    }
+
 	// Use this for initialization
 	void Start ()
     {
@@ -37,5 +42,11 @@ public class Move : MonoBehaviour {
 
         // Move
         transform.position += velocity * Time.deltaTime;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + Vector3.forward);
     }
 }
