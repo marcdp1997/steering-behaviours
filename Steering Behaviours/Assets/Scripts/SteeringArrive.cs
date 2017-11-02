@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SteeringArrive : MonoBehaviour {
-
-    public float max_force;
-    public float stop_area_radius;
-    public float slow_area_radius;
+public class SteeringArrive : MonoBehaviour 
+{
+    public float max_force = 2.0f;
+    public float stop_area_radius = 1.0f;
+    public float slow_area_radius = 2.5f;
 
     private Move move;
 
@@ -27,17 +27,20 @@ public class SteeringArrive : MonoBehaviour {
         Vector3 desired_velocity = target_position - transform.position;
         float distance = desired_velocity.magnitude;
 
-        if (distance < slow_area_radius)
-            desired_velocity = desired_velocity.normalized * move.max_velocity * (distance / slow_area_radius);
-        else
-            desired_velocity = desired_velocity.normalized * move.max_velocity;
+		if (distance < stop_area_radius) 
+		{
+			move.SetVelocity(Vector3.zero);
+		}
+		else
+		{
+			if (distance < slow_area_radius) desired_velocity = desired_velocity.normalized * move.max_velocity * (distance / slow_area_radius);
+			else desired_velocity = desired_velocity.normalized * move.max_velocity;
 
-        Vector3 steering = desired_velocity - move.GetVelocity();
-        steering = steering.normalized * max_force;
-        steering.y = 0.0f;
+			Vector3 steering_force = desired_velocity - move.GetVelocity();
+			steering_force.y = 0.0f;
 
-        if (distance < stop_area_radius) move.SetVelocity(Vector3.zero);
-        else move.AddSteeringForce(steering);
+			move.AddSteeringForce(steering_force);
+		} 
     }
 
     void OnDrawGizmos()

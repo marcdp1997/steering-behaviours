@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Move : MonoBehaviour {
-
+public class Move : MonoBehaviour 
+{
     public GameObject target;
     public float max_velocity;
     public float max_rotation;
@@ -37,16 +37,16 @@ public class Move : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
 		
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	void Update()
     {
         // Cap velocity
-		if (velocity.magnitude > max_velocity)
+		if(velocity.magnitude > max_velocity)
         {
             velocity = velocity.normalized * max_velocity;
         }
@@ -55,7 +55,7 @@ public class Move : MonoBehaviour {
         transform.position += velocity * Time.deltaTime;
 
         // Rotate
-        transform.rotation *= Quaternion.AngleAxis(rotation * Time.deltaTime, Vector3.up);
+		transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime, -max_rotation, max_rotation), Vector3.up);
     }
 
     void OnDrawGizmos()

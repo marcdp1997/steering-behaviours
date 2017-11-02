@@ -5,7 +5,9 @@ using UnityEngine;
 public class SteeringAlign : MonoBehaviour {
 
     Move move;
-    public float min_rotation = 5.0f;
+    public float stop_angle = 5.0f;
+	public float slow_angle = 20.0f;
+	public float time_rotating = 0.1f;
 
 	// Use this for initialization
 	void Start ()
@@ -20,9 +22,26 @@ public class SteeringAlign : MonoBehaviour {
         float velocity_orientation = Mathf.Atan2(move.GetVelocity().x, move.GetVelocity().z) * Mathf.Rad2Deg;
         float diff = Mathf.DeltaAngle(my_orientation, velocity_orientation);
 
-        float absolute_diff = Mathf.Abs(diff);
+		if(Mathf.Abs(diff) < stop_angle || move.GetVelocity() == Vector3.zero) 
+		{
+			move.SetRotation(0.0f);
+		} 
+		else 
+		{
+			float ideal_rotation = 0.0f;
 
-        if (absolute_diff < min_rotation) move.SetRotation(0.0f);
-        else move.AddRotation(Mathf.Clamp(diff, -move.max_rotation, move.max_rotation));
+			if(Mathf.Abs(diff) > slow_angle) ideal_rotation = move.max_rotation;
+			else ideal_rotation = move.max_rotation * (diff / slow_angle);
+
+			if(diff < 0) ideal_rotation *= -1.0f;
+
+			move.AddRotation(ideal_rotation / time_rotating);
+		}
     }
+
+	void OnDrawGizmos()
+	{
+		Gizmos.color = Color.blue;
+		Gizmos.DrawLine(transform.position, transform.position + move.GetVelocity().normalized);
+	}
 }
