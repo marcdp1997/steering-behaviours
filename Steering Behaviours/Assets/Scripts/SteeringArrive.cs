@@ -34,6 +34,7 @@ public class SteeringArrive : MonoBehaviour {
 
         Vector3 steering = desired_velocity - move.GetVelocity();
         steering = steering.normalized * max_force;
+        steering.y = 0.0f;
 
         if (distance < stop_area_radius) move.SetVelocity(Vector3.zero);
         else move.AddSteeringForce(steering);
