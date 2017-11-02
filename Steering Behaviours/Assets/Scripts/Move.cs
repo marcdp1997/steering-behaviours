@@ -6,6 +6,7 @@ public class Move : MonoBehaviour {
 
     public GameObject target;
     public float max_velocity;
+    public float max_rotation;
 
     private Vector3 velocity = Vector3.zero;
     private float rotation = 0.0f;
@@ -25,8 +26,18 @@ public class Move : MonoBehaviour {
         velocity = new_velocity;
     }
 
-	// Use this for initialization
-	void Start ()
+    public void AddRotation(float new_rotation)
+    {
+        rotation += new_rotation;
+    }
+
+    public void SetRotation(float new_rotation)
+    {
+        rotation = new_rotation;
+    }
+
+    // Use this for initialization
+    void Start ()
     {
 		
 	}
@@ -42,11 +53,14 @@ public class Move : MonoBehaviour {
 
         // Move
         transform.position += velocity * Time.deltaTime;
+
+        // Rotate
+        transform.rotation *= Quaternion.AngleAxis(rotation * Time.deltaTime, Vector3.up);
     }
 
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + Vector3.forward);
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward);
     }
 }
