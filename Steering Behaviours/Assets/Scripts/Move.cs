@@ -14,6 +14,12 @@ public class Move : MonoBehaviour
     public void AddSteeringForce(Vector3 force)
     {
         velocity += force;
+
+        // Cap velocity
+        if (velocity.magnitude > max_velocity)
+        {
+            velocity = velocity.normalized * max_velocity;
+        }
     }
 
     public Vector3 GetVelocity()
@@ -45,12 +51,6 @@ public class Move : MonoBehaviour
 	// Update is called once per frame
 	void Update()
     {
-        // Cap velocity
-		if(velocity.magnitude > max_velocity)
-        {
-            velocity = velocity.normalized * max_velocity;
-        }
-
         // Move
         transform.position += velocity * Time.deltaTime;
 
@@ -60,7 +60,7 @@ public class Move : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward);
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position, transform.position + (velocity.normalized * max_velocity));
     }
 }

@@ -41,7 +41,7 @@ public class SteeringAlign : MonoBehaviour {
 
 	void OnDrawGizmos()
 	{
-		Gizmos.color = Color.green;
-		Gizmos.DrawLine(transform.position, transform.position + move.GetVelocity().normalized);
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward);
 	}
 }
