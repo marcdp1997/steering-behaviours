@@ -10,13 +10,13 @@ public class SteeringAlign : MonoBehaviour {
 	public float time_rotating = 0.1f;
 
 	// Use this for initialization
-	void Start ()
+	void Start()
     {
         move = GetComponent<Move>();
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	void Update()
     {
         float my_orientation = Mathf.Atan2(transform.forward.x, transform.forward.z) * Mathf.Rad2Deg;
         float velocity_orientation = Mathf.Atan2(move.GetVelocity().x, move.GetVelocity().z) * Mathf.Rad2Deg;

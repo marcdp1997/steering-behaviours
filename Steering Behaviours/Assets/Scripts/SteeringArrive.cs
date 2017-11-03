@@ -11,13 +11,13 @@ public class SteeringArrive : MonoBehaviour
     private Move move;
 
 	// Use this for initialization
-	void Start ()
+	void Start()
     {
         move = GetComponent<Move>();
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	void Update()
     {
         Steer(move.target.transform.position);
 	}
