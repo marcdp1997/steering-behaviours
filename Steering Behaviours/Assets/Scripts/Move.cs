@@ -5,8 +5,8 @@ using UnityEngine;
 public class Move : MonoBehaviour 
 {
     public GameObject target;
-    public float max_velocity;
-    public float max_rotation;
+    public float max_velocity = 3.0f;
+    public float max_rotation = 5.0f;
 
     private Vector3 velocity = Vector3.zero;
     private float rotation = 0.0f;

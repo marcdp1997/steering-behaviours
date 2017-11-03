@@ -6,11 +6,14 @@ public class SteeringSeparation : MonoBehaviour
 {
 	private Move move;
 
-	public float max_see_ahead = 3.0f; // The greater this value is, the earlier the character will start acting to dodge an obstacle.
-	public float max_avoid_force = 5.0f;
+	public float max_see_ahead = 1.5f; // The greater this value is, the earlier the character will start acting to dodge an obstacle.
+	public float max_avoid_force = 10.0f;
 
-	// Use this for initialization
-	void Start() 
+    Vector3 avoidance_force = Vector3.zero;
+    Vector3 central_ray = Vector3.zero;
+
+    // Use this for initialization
+    void Start() 
 	{
 		move = GetComponent<Move>();
 	}
@@ -20,17 +23,24 @@ public class SteeringSeparation : MonoBehaviour
 	{
 		RaycastHit hit;
 
-		// Creating vectors that will detect the collision (central with two short whiskers).
-		// Well, first trying with one vector xD
-		Vector3 central_ray = transform.position + (move.GetVelocity().normalized * max_see_ahead);
-		Debug.DrawRay (transform.position, move.GetVelocity ().normalized * max_see_ahead);
+        // Creating vectors that will detect the collision (central with two short whiskers).
+        // Well, first trying with one vector xD
+        avoidance_force = Vector3.zero;
+        central_ray = Vector3.zero;
 
-		if (Physics.Raycast(transform.position, central_ray, out hit, central_ray.magnitude))
-		{
-			Vector3 avoidance_force = central_ray - hit.collider.transform.position;
-			avoidance_force = avoidance_force.normalized * max_avoid_force;
-			avoidance_force.y = 0.0f;
-			move.AddSteeringForce(avoidance_force);
-		}
-	}
+        central_ray = transform.position + (move.GetVelocity().normalized * max_see_ahead);
+
+        if (Physics.Raycast(transform.position, central_ray.normalized, out hit, max_see_ahead))
+        {
+            avoidance_force = hit.normal.normalized * max_avoid_force;
+            avoidance_force.y = 0.0f;
+            move.AddSteeringForce(avoidance_force);
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.white;
+        Gizmos.DrawLine(transform.position, transform.position + central_ray);
+    }
 }
