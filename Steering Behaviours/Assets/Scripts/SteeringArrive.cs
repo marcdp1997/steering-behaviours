@@ -39,8 +39,8 @@ public class SteeringArrive : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(move.target.transform.position, slow_area_radius);
-        Gizmos.DrawWireSphere(move.target.transform.position, stop_area_radius);
+        //Gizmos.color = Color.yellow;
+        //Gizmos.DrawWireSphere(move.target.transform.position, slow_area_radius);
+        //Gizmos.DrawWireSphere(move.target.transform.position, stop_area_radius);
     }
 }
