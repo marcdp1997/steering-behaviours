@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SteeringArrive : MonoBehaviour 
 {
-    public float max_force = 2.0f;
     public float stop_area_radius = 0.5f;
     public float slow_area_radius = 2.0f;
 
@@ -19,28 +18,23 @@ public class SteeringArrive : MonoBehaviour
 	// Update is called once per frame
 	void Update()
     {
-        Steer(move.target.transform.position);
-	}
-
-    public void Steer(Vector3 target_position)
-    {
-        Vector3 desired_velocity = target_position - transform.position;
+        Vector3 desired_velocity = move.target.transform.position - transform.position;
         float distance = desired_velocity.magnitude;
 
-		if (distance < stop_area_radius) 
-		{
-			move.SetVelocity(Vector3.zero);
-		}
-		else
-		{
-			if (distance < slow_area_radius) desired_velocity = desired_velocity.normalized * move.max_velocity * (distance / slow_area_radius);
-			else desired_velocity = desired_velocity.normalized * move.max_velocity;
+        if (distance < stop_area_radius)
+        {
+            move.SetVelocity(Vector3.zero);
+        }
+        else
+        {
+            if (distance < slow_area_radius) desired_velocity = desired_velocity.normalized * move.max_velocity * (distance / slow_area_radius);
+            else desired_velocity = desired_velocity.normalized * move.max_velocity;
 
-			Vector3 steering_force = desired_velocity - move.GetVelocity();
-			steering_force.y = 0.0f;
+            Vector3 steering_force = desired_velocity - move.GetVelocity();
+            steering_force.y = 0.0f;
 
-			move.AddSteeringForce(steering_force);
-		} 
+            move.AddSteeringForce(steering_force);
+        }
     }
 
     void OnDrawGizmos()

@@ -7,19 +7,15 @@ public class Move : MonoBehaviour
     public GameObject target;
     public float max_velocity = 3.0f;
     public float max_rotation = 5.0f;
+    public float max_force = 5.0f;
 
     private Vector3 velocity = Vector3.zero;
+    private Vector3 steering = Vector3.zero;
     private float rotation = 0.0f;
 
     public void AddSteeringForce(Vector3 force)
     {
-        velocity += force;
-
-        // Cap velocity
-        if (velocity.magnitude > max_velocity)
-        {
-            velocity = velocity.normalized * max_velocity;
-        }
+        steering += force;
     }
 
     public Vector3 GetVelocity()
@@ -51,6 +47,22 @@ public class Move : MonoBehaviour
 	// Update is called once per frame
 	void Update()
     {
+        // Cap steering force
+        if (steering.magnitude > max_force)
+        {
+            steering = steering.normalized * max_force;
+        }
+
+        // Adding force to velocity
+        velocity += steering;
+        steering = Vector3.zero;
+
+        // Cap velocity
+        if (velocity.magnitude > max_velocity)
+        {
+            velocity = velocity.normalized * max_velocity;
+        }
+
         // Move
         transform.position += velocity * Time.deltaTime;
 

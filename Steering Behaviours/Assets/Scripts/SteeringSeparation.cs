@@ -12,15 +12,16 @@ public class my_ray
 public class SteeringSeparation : MonoBehaviour
 {
     private Move move;
+    private SteeringArrive arrive;
 
-    public float max_avoid_force = 10.0f;
     public my_ray[] rays;
-    Vector3 avoidance_force = Vector3.zero;
+    public float max_avoid_force;
 
     // Use this for initialization
     void Start()
     {
         move = GetComponent<Move>();
+        arrive = GetComponent<SteeringArrive>();
     }
 
     // Update is called once per frame
@@ -30,14 +31,13 @@ public class SteeringSeparation : MonoBehaviour
 
         foreach (my_ray ray in rays)
         {
-            ray.direction = transform.forward;
-            avoidance_force = Vector3.zero;
+            ray.direction = move.GetVelocity();
 
             if (Physics.Raycast(transform.position, ray.direction.normalized, out hit, ray.length))
             {
-                avoidance_force = hit.normal.normalized * max_avoid_force;
-                avoidance_force.y = 0.0f;
-                move.AddSteeringForce(avoidance_force);
+                Vector3 steering_force = hit.normal.normalized * max_avoid_force;
+                steering_force.y = 0.0f;
+                move.AddSteeringForce(steering_force);
             }
         }
     }
