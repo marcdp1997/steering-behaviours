@@ -15,7 +15,7 @@ public class SteeringSeparation : MonoBehaviour
     private SteeringArrive arrive;
 
     public my_ray[] rays;
-    public float max_avoid_force;
+    public float max_avoid_force = 2.0f;
 
     // Use this for initialization
     void Start()
@@ -27,20 +27,23 @@ public class SteeringSeparation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        RaycastHit hit;
-        float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
-        Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
-
-        foreach (my_ray ray in rays)
+        if (move.GetVelocity() != Vector3.zero)
         {
-            Vector3 direction = Vector3.forward;
-            direction.x += ray.direction_offset;
+            RaycastHit hit;
+            float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
+            Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
 
-            if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
+            foreach (my_ray ray in rays)
             {
-                Vector3 steering_force = hit.normal.normalized * max_avoid_force;
-                steering_force.y = 0.0f;
-                move.AddSteeringForce(steering_force);
+                Vector3 direction = Vector3.forward;
+                direction.x += ray.direction_offset;
+
+                if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
+                {
+                    Vector3 steering_force = hit.normal.normalized * max_avoid_force;
+                    steering_force.y = 0.0f;
+                    move.AddSteeringForce(steering_force);
+                }
             }
         }
     }

@@ -7,7 +7,7 @@ public class Move : MonoBehaviour
     public GameObject target;
     public float max_velocity = 3.0f;
     public float max_rotation = 5.0f;
-    public float max_force = 5.0f;
+    public float max_force = 3.0f;
 
     private Vector3 velocity = Vector3.zero;
     private Vector3 steering = Vector3.zero;
@@ -73,6 +73,6 @@ public class Move : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, transform.position + (velocity.normalized * max_velocity));
+        Gizmos.DrawLine(transform.position, transform.position + (velocity));
     }
 }
