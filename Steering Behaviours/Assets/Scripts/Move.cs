@@ -6,8 +6,9 @@ public class Move : MonoBehaviour
 {
     public GameObject target;
     public float max_velocity = 3.0f;
-    public float max_rotation = 5.0f;
-    public float max_force = 3.0f;
+    public float max_rotation = 2.0f;
+    public float max_force = 2.0f;
+    public bool doing_queue = false;
 
     private Vector3 velocity = Vector3.zero;
     private Vector3 steering = Vector3.zero;
@@ -47,27 +48,30 @@ public class Move : MonoBehaviour
 	// Update is called once per frame
 	void Update()
     {
-        // Cap steering force
-        if (steering.magnitude > max_force)
+        if (!doing_queue)
         {
-            steering = steering.normalized * max_force;
+            // Cap steering force
+            if (steering.magnitude > max_force)
+            {
+                steering = steering.normalized * max_force;
+            }
+
+            // Adding force to velocity
+            velocity += steering;
+            steering = Vector3.zero;
+
+            // Cap velocity
+            if (velocity.magnitude > max_velocity)
+            {
+                velocity = velocity.normalized * max_velocity;
+            }
+
+            // Move
+            transform.position += velocity * Time.deltaTime;
+
+            // Rotate
+            transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime, -max_rotation, max_rotation), Vector3.up);
         }
-
-        // Adding force to velocity
-        velocity += steering;
-        steering = Vector3.zero;
-
-        // Cap velocity
-        if (velocity.magnitude > max_velocity)
-        {
-            velocity = velocity.normalized * max_velocity;
-        }
-
-        // Move
-        transform.position += velocity * Time.deltaTime;
-
-        // Rotate
-		transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime, -max_rotation, max_rotation), Vector3.up);
     }
 
     void OnDrawGizmos()

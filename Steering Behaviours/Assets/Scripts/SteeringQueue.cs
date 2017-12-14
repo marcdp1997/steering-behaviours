@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class my_ray
+public class queue_ray
 {
     public float length = 2.0f; // The greater this value is, the earlier the character will start acting to dodge an obstacle.
-    public float direction_offset = 0.0f;
 }
 
-public class SteeringSeparation : MonoBehaviour
+public class SteeringQueue : MonoBehaviour
 {
     private Move move;
     private SteeringArrive arrive;
+    private SteeringSeparation separation;
 
-    public my_ray[] rays;
-    public float max_avoid_force = 1.0f;
+    public queue_ray[] queue_rays;
 
     // Use this for initialization
     void Start()
@@ -27,22 +26,21 @@ public class SteeringSeparation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        move.doing_queue = false;
+
         if (move.GetVelocity() != Vector3.zero)
         {
             RaycastHit hit;
             float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
             Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
 
-            foreach (my_ray ray in rays)
+            foreach (queue_ray ray in queue_rays)
             {
                 Vector3 direction = Vector3.forward;
-                direction.x += ray.direction_offset;
 
                 if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
                 {
-                    Vector3 steering_force = transform.right.normalized * max_avoid_force;
-                    steering_force.y = 0.0f;
-                    move.AddSteeringForce(steering_force);
+                    move.doing_queue = true;
                 }
             }
         }
@@ -54,12 +52,10 @@ public class SteeringSeparation : MonoBehaviour
         float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
         Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
 
-        foreach (my_ray ray in rays)
+        foreach (queue_ray ray in queue_rays)
         {
             Vector3 direction = Vector3.forward;
-            direction.x += ray.direction_offset;
             Gizmos.DrawRay(transform.position, (q * direction.normalized) * ray.length);
         }
-            
     }
 }
