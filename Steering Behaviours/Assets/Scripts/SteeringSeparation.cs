@@ -27,7 +27,7 @@ public class SteeringSeparation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (move.GetVelocity() != Vector3.zero)
+        if (move.velocity != Vector3.zero)
         {
             RaycastHit hit;
             float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
@@ -42,7 +42,7 @@ public class SteeringSeparation : MonoBehaviour
                 {
                     Vector3 steering_force = transform.right.normalized * max_avoid_force;
                     steering_force.y = 0.0f;
-                    move.AddSteeringForce(steering_force);
+                    move.AddVelocity(steering_force);
                 }
             }
         }

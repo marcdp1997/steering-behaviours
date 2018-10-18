@@ -4,24 +4,21 @@ using UnityEngine;
 
 public class Move : MonoBehaviour 
 {
+    [Header("------ Read Only -------")]
+    public Vector3 velocity = Vector3.zero;
+    public float rotation = 0.0f;
+
+    [Header("------ Set Values ------")]
     public GameObject target;
     public float max_velocity = 3.0f;
     public float max_rotation = 2.0f;
-    public float max_force = 2.0f;
-    public bool doing_queue = false;
+    public float max_acceleration = 0.1f;
 
-    private Vector3 velocity = Vector3.zero;
-    private Vector3 steering = Vector3.zero;
-    private float rotation = 0.0f;
+    // public bool doing_queue = false;
 
-    public void AddSteeringForce(Vector3 force)
+    public void AddVelocity(Vector3 steering_force)
     {
-        steering += force;
-    }
-
-    public Vector3 GetVelocity()
-    {
-        return velocity;
+        velocity += steering_force;
     }
 
     public void SetVelocity(Vector3 new_velocity)
@@ -48,30 +45,18 @@ public class Move : MonoBehaviour
 	// Update is called once per frame
 	void Update()
     {
-        if (!doing_queue)
+        // Cap velocity
+        if (velocity.magnitude > max_velocity)
         {
-            // Cap steering force
-            if (steering.magnitude > max_force)
-            {
-                steering = steering.normalized * max_force;
-            }
-
-            // Adding force to velocity
-            velocity += steering;
-            steering = Vector3.zero;
-
-            // Cap velocity
-            if (velocity.magnitude > max_velocity)
-            {
-                velocity = velocity.normalized * max_velocity;
-            }
-
-            // Move
-            transform.position += velocity * Time.deltaTime;
-
-            // Rotate
-            transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime, -max_rotation, max_rotation), Vector3.up);
+            velocity = velocity.normalized * max_velocity;
         }
+
+        // Move
+        velocity.y = 0.0f;
+        transform.position += velocity * Time.deltaTime;
+
+        // Rotate
+        transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime, -max_rotation, max_rotation), Vector3.up);
     }
 
     void OnDrawGizmos()

@@ -19,10 +19,10 @@ public class SteeringAlign : MonoBehaviour
 	void Update()
     {
         float my_orientation = Mathf.Atan2(transform.forward.x, transform.forward.z) * Mathf.Rad2Deg;
-        float velocity_orientation = Mathf.Atan2(move.GetVelocity().x, move.GetVelocity().z) * Mathf.Rad2Deg;
+        float velocity_orientation = Mathf.Atan2(move.velocity.x, move.velocity.z) * Mathf.Rad2Deg;
         float diff = Mathf.DeltaAngle(my_orientation, velocity_orientation);
 
-		if(Mathf.Abs(diff) - move.max_rotation < stop_angle || move.GetVelocity() == Vector3.zero) 
+		if(Mathf.Abs(diff) - move.max_rotation < stop_angle || move.velocity == Vector3.zero) 
 		{
 			move.SetRotation(0.0f);
 		} 

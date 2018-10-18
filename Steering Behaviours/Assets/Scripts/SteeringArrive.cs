@@ -28,19 +28,18 @@ public class SteeringArrive : MonoBehaviour
         }
         else
         {
-            if (distance <= slow_area_radius)
+            if (distance < slow_area_radius)
             {
-                float slow_factor = distance / slow_area_radius;
-                desired_velocity = desired_velocity * slow_factor;
+                // Slow factor
+                desired_velocity *= distance / slow_area_radius;
             }
             else
             {
                 
             }
 
-            Vector3 steering_force = desired_velocity - move.GetVelocity();
-            steering_force.y = 0.0f;
-            move.AddSteeringForce(steering_force);
+            Vector3 steering_force = desired_velocity - move.velocity;
+            move.AddVelocity(steering_force);
         }
     }
 

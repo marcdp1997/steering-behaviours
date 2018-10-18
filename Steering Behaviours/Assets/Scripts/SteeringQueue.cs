@@ -28,7 +28,7 @@ public class SteeringQueue : MonoBehaviour
     {
         move.doing_queue = false;
 
-        if (move.GetVelocity() != Vector3.zero)
+        if (move.velocity != Vector3.zero)
         {
             RaycastHit hit;
             float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
