@@ -5,8 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class my_ray
 {
-    public float length = 2.0f; // The greater this value is, the earlier the character will start acting to dodge an obstacle.
-    public float direction_offset = 0.0f;
+    public float length; // The greater this value is, the earlier the character will start acting to dodge an obstacle.
+    public float direction_offset; // Final position offset of the ray
 }
 
 public class SteeringSeparation : MonoBehaviour
@@ -15,13 +15,12 @@ public class SteeringSeparation : MonoBehaviour
     private SteeringArrive arrive;
 
     public my_ray[] rays;
-    public float max_avoid_force = 1.0f;
+    public float max_avoid_force = 0.1f;
 
     // Use this for initialization
     void Start()
     {
         move = GetComponent<Move>();
-        arrive = GetComponent<SteeringArrive>();
     }
 
     // Update is called once per frame
@@ -40,9 +39,13 @@ public class SteeringSeparation : MonoBehaviour
 
                 if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
                 {
-                    Vector3 steering_force = transform.right.normalized * max_avoid_force;
-                    steering_force.y = 0.0f;
+                    Vector3 steering_force = hit.normal * max_avoid_force;
+
+                    //if (ray.direction_offset < 0) steering_force = transform.right.normalized * max_avoid_force;
+                    //else steering_force = -transform.right.normalized * max_avoid_force;
+
                     move.AddVelocity(steering_force);
+                    break;
                 }
             }
         }
