@@ -14,7 +14,7 @@ public class Move : MonoBehaviour
     public float max_rotation = 2.0f;
     public float max_acceleration = 0.1f;
 
-    // public bool doing_queue = false;
+    //public bool doing_queue = false;
 
     public void AddVelocity(Vector3 steering_force)
     {

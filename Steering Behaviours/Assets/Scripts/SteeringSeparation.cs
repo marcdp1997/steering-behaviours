@@ -59,7 +59,6 @@ public class SteeringSeparation : MonoBehaviour
             Vector3 direction = Vector3.forward;
             direction.x += ray.direction_offset;
             Gizmos.DrawRay(transform.position, (q * direction.normalized) * ray.length);
-        }
-            
+        }    
     }
 }

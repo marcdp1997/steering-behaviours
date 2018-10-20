@@ -26,7 +26,7 @@ public class SteeringQueue : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        move.doing_queue = false;
+        //move.doing_queue = false;
 
         if (move.velocity != Vector3.zero)
         {
@@ -40,7 +40,7 @@ public class SteeringQueue : MonoBehaviour
 
                 if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
                 {
-                    move.doing_queue = true;
+                    //move.doing_queue = true;
                 }
             }
         }

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class SteeringArrive : MonoBehaviour 
 {
-    public float stop_area_radius = 0.1f;
-    public float slow_area_radius = 4.0f;
-    public float max_acceleration = 1.0f;
-
     private Move move;
+
+    public float stop_area_radius = 0.2f;
+    public float slow_area_radius = 2.0f;
+    public float time_to_target = 0.1f;
 
 	// Use this for initialization
 	void Start()
@@ -19,28 +19,34 @@ public class SteeringArrive : MonoBehaviour
 	// Update is called once per frame
 	void Update()
     {
-        Vector3 desired_velocity = move.target.transform.position - transform.position;
-        float distance = desired_velocity.magnitude;
+        Vector3 distance = move.target.transform.position - transform.position;
 
-        if (distance < stop_area_radius)
+        if (distance.magnitude < stop_area_radius)
         {
             move.SetVelocity(Vector3.zero);
+            return;
         }
-        else
-        {
-            if (distance < slow_area_radius)
-            {
-                // Slow factor
-                desired_velocity *= distance / slow_area_radius;
-            }
-            else
-            {
-                
-            }
 
-            Vector3 steering_force = desired_velocity - move.velocity;
-            move.AddVelocity(steering_force);
+        // Finding desired velocity
+        Vector3 desired_velocity = distance.normalized * move.max_velocity;
+
+        if (distance.magnitude < slow_area_radius)
+        {
+            desired_velocity = distance.normalized * move.max_velocity * (distance.magnitude / slow_area_radius);
         }
+
+        // Finding desired acceleration
+        Vector3 desired_accel = (desired_velocity - move.velocity);
+
+        if (distance.magnitude > slow_area_radius) desired_accel /= time_to_target; // To accelerate we divide by the time we want the object to be accelerated. 
+                                                                                    // To deaccelerate we only use the distance.
+        // Cap desired acceleration
+        if (desired_accel.magnitude > move.max_acceleration)
+        desired_accel = desired_accel.normalized * move.max_acceleration;
+
+        // Add steering force
+        Vector3 steering_force = desired_accel;
+        move.AddVelocity(steering_force);
     }
 
     void OnDrawGizmos()

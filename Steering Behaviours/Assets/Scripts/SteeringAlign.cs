@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class SteeringAlign : MonoBehaviour
 {
-    Move move;
-    public float stop_angle = 0.0f;
+    private Move move;
+
+    public float stop_angle = 0.2f;
 	public float slow_angle = 30.0f;
 	public float time_rotating = 0.1f;
 
-	// Use this for initialization
-	void Start()
+    // Use this for initialization
+    void Start()
     {
         move = GetComponent<Move>();
 	}
