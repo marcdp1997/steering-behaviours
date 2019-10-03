@@ -40,10 +40,6 @@ public class SteeringSeparation : MonoBehaviour
                 if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
                 {
                     Vector3 steering_force = hit.normal * max_avoid_force;
-
-                    //if (ray.direction_offset < 0) steering_force = transform.right.normalized * max_avoid_force;
-                    //else steering_force = -transform.right.normalized * max_avoid_force;
-
                     move.AddVelocity(steering_force);
                     break;
                 }
@@ -53,15 +49,24 @@ public class SteeringSeparation : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
         float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
         Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
+
+        RaycastHit hit;
 
         foreach (my_ray ray in rays)
         {
             Vector3 direction = Vector3.forward;
             direction.x += ray.direction_offset;
+
+            if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
+            {
+                Gizmos.color = Color.white;
+                Gizmos.DrawRay(hit.point, hit.normal * 100);
+            }
+
+            Gizmos.color = Color.red;
             Gizmos.DrawRay(transform.position, (q * direction.normalized) * ray.length);
-        }    
+        }
     }
 }
