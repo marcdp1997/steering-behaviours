@@ -12,7 +12,7 @@ public class SteeringQueue : MonoBehaviour
 {
     private Move move;
     private SteeringArrive arrive;
-    private SteeringSeparation separation;
+    private SteeringAvoidance avoidance;
 
     public queue_ray[] queue_rays;
 

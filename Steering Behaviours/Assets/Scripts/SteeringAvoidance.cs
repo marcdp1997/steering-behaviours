@@ -9,7 +9,7 @@ public class my_ray
     public float direction_offset; // Final position offset of the ray
 }
 
-public class SteeringSeparation : MonoBehaviour
+public class SteeringAvoidance : MonoBehaviour
 {
     private Move move;
     private SteeringArrive arrive;

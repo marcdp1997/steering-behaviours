@@ -20,21 +20,22 @@ public class SteeringArrive : MonoBehaviour
 	void Update()
     {
         Vector3 distance = move.target.transform.position - transform.position;
+        float slow_factor = distance.magnitude / slow_area_radius;
 
         // Finding desired velocity
         Vector3 desired_velocity = distance.normalized * move.max_velocity;
 
-        if (distance.magnitude <= slow_area_radius)
-        {
-            desired_velocity *= (distance.magnitude / slow_area_radius);
-        }
-
+        // Finding desired deceleration
+        // To decelerate we only use the distance.
+        if (distance.magnitude <= slow_area_radius)    
+            desired_velocity *= slow_factor;
+       
         // Finding desired acceleration
+        // To accelerate we divide by the time we want the object to be accelerated. 
         Vector3 desired_accel = (desired_velocity - move.velocity);
 
         if (distance.magnitude >= slow_area_radius) 
-            desired_accel /= time_to_target; // To accelerate we divide by the time we want the object to be accelerated. 
-                                             // To deaccelerate we only use the distance.
+            desired_accel /= time_to_target;                                          
        
         // Cap desired acceleration
         if (desired_accel.magnitude >= move.max_acceleration)
