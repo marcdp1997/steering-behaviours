@@ -2,60 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class queue_ray
-{
-    public float length = 2.0f; // The greater this value is, the earlier the character will start acting to dodge an obstacle.
-}
-
 public class SteeringQueue : MonoBehaviour
 {
-    private Move move;
-    private SteeringArrive arrive;
-    private SteeringAvoidance avoidance;
+    [Header("------ Read Only -------")]
+    public bool is_in_queue = false;
 
-    public queue_ray[] queue_rays;
+    [Header("------ Set Values -------")]
+    public float max_queue_ahead;
+    public float max_queue_radius;
+    public float max_brake_force;
+
+    private Move move; 
 
     // Use this for initialization
     void Start()
     {
         move = GetComponent<Move>();
-        arrive = GetComponent<SteeringArrive>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //move.doing_queue = false;
+        Vector3 ahead = transform.position + (move.velocity.normalized * max_queue_ahead);
 
-        if (move.velocity != Vector3.zero)
-        {
-            RaycastHit hit;
-            float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
-            Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
-
-            foreach (queue_ray ray in queue_rays)
-            {
-                Vector3 direction = Vector3.forward;
-
-                if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
-                {
-                    //move.doing_queue = true;
-                }
-            }
-        }
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
+        RaycastHit hit;
         float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
         Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
 
-        foreach (queue_ray ray in queue_rays)
+
+        if (Physics.Raycast(transform.position, q * Vector3.forward, out hit, max_queue_ahead))
         {
-            Vector3 direction = Vector3.forward;
-            Gizmos.DrawRay(transform.position, (q * direction.normalized) * ray.length);
+            if (!hit.collider.gameObject.CompareTag("Obstacle"))
+            {
+                is_in_queue = true;
+
+                if (move.velocity.magnitude > 0.2)
+                {
+                    Vector3 brake_force = -Vector3.forward * (max_brake_force / 100);
+                    move.AddVelocity(brake_force);
+                }
+                else move.SetVelocity(Vector3.zero);
+            }
         }
+        else is_in_queue = false;
+    }
+            
+    void OnDrawGizmos()
+    {
+        float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
+        Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawRay(transform.position, (q * Vector3.forward) * max_queue_ahead);
     }
 }

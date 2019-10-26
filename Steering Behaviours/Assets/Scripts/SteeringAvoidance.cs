@@ -13,6 +13,7 @@ public class SteeringAvoidance : MonoBehaviour
 {
     private Move move;
     private SteeringArrive arrive;
+    private SteeringQueue queue;
 
     public my_ray[] rays;
     public float max_avoid_force = 0.1f;
@@ -21,12 +22,13 @@ public class SteeringAvoidance : MonoBehaviour
     void Start()
     {
         move = GetComponent<Move>();
+        queue = GetComponent<SteeringQueue>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (move.velocity != Vector3.zero)
+        if (move.velocity != Vector3.zero && !queue.is_in_queue)
         {
             RaycastHit hit;
             float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
