@@ -11,12 +11,12 @@ public class my_ray
 
 public class SteeringAvoidance : MonoBehaviour
 {
+    public my_ray[] rays;
+    public float max_avoid_force = 0.1f;
+
     private Move move;
     private SteeringArrive arrive;
     private SteeringQueue queue;
-
-    public my_ray[] rays;
-    public float max_avoid_force = 0.1f;
 
     // Use this for initialization
     void Start()

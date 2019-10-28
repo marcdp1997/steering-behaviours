@@ -29,7 +29,6 @@ public class SteeringQueue : MonoBehaviour
         float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
         Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
 
-
         if (Physics.Raycast(transform.position, q * Vector3.forward, out hit, max_queue_ahead))
         {
             if (!hit.collider.gameObject.CompareTag("Obstacle"))
