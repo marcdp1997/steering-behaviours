@@ -46,12 +46,12 @@ public class SteeringQueue : MonoBehaviour
         else is_in_queue = false;
     }
             
-    void OnDrawGizmos()
-    {
-        float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
-        Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
+//    void OnDrawGizmos()
+//    {
+//        float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
+//        Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
 
-        Gizmos.color = Color.white;
-        Gizmos.DrawRay(transform.position, (q * Vector3.forward) * max_queue_ahead);
-    }
+//        Gizmos.color = Color.white;
+//        Gizmos.DrawRay(transform.position, (q * Vector3.forward) * max_queue_ahead);
+//    }
 }

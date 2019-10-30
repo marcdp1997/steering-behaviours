@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SteeringSeparation : MonoBehaviour
 {
+    public float search_radius = 1.0f;
     public float max_repulsion;
 
     private Move move;
@@ -21,7 +22,7 @@ public class SteeringSeparation : MonoBehaviour
     {
         int layer_id = 8;
         int layer_mask = 1 << layer_id;
-        Collider[] hitColliders = Physics.OverlapSphere(collider.transform.position, collider.radius, layer_mask);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, search_radius, layer_mask);
 
         Vector3 steering_force = Vector3.zero;
         for (int i = 0; i < hitColliders.Length; i++)
@@ -32,5 +33,11 @@ public class SteeringSeparation : MonoBehaviour
         }
 
         move.AddVelocity(steering_force);
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, search_radius);
     }
 }

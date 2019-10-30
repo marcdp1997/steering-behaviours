@@ -39,7 +39,8 @@ public class SteeringAvoidance : MonoBehaviour
                 Vector3 direction = Vector3.forward;
                 direction.x += ray.direction_offset;
 
-                if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
+                if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length)
+                    && hit.collider.CompareTag("Obstacle"))
                 {
                     Vector3 steering_force = hit.normal * max_avoid_force;
                     move.AddVelocity(steering_force);
@@ -61,13 +62,14 @@ public class SteeringAvoidance : MonoBehaviour
             Vector3 direction = Vector3.forward;
             direction.x += ray.direction_offset;
 
-            if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length))
+            if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length)
+                && hit.collider.CompareTag("Obstacle"))
             {
                 Gizmos.color = Color.white;
                 Gizmos.DrawRay(hit.point, hit.normal * 100);
             }
 
-            Gizmos.color = Color.red;
+            Gizmos.color = Color.white;
             Gizmos.DrawRay(transform.position, (q * direction.normalized) * ray.length);
         }
     }
