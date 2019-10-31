@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SteeringSeparation : MonoBehaviour
 {
-    public float search_radius = 1.0f;
+    public float search_radius;
     public float max_repulsion;
 
     private Move move;
