@@ -61,13 +61,12 @@ public class MoveNavMesh : MonoBehaviour
 
     public void SetDestination(Vector3 dest)
     {
-        bool hola = false;
         progress = 0;
 
         final_target = dest;
         NavMeshPath nav_path = new NavMeshPath();
         nav_agent.SetDestination(final_target);
-        hola =  nav_agent.CalculatePath(final_target, nav_path);
+        nav_agent.CalculatePath(final_target, nav_path);
         path = nav_agent.path.corners;
     }
 
