@@ -4,58 +4,58 @@ using UnityEngine;
 
 public class SteeringQueue : MonoBehaviour
 {
+    private Move move;
+    private Vector3 brakeForce;
+
     [Header("------ Read Only -------")]
-    public bool is_in_queue = false;
+    [SerializeField] private float distance;
 
-    [Header("------ Set Values -------")]
-    public float max_queue_ahead;
-    public float max_queue_radius;
-    public float max_brake_force;
+    [Header("------ Set Values ------")]
+    public float maxAhead = 4.0f;
+    public float minAhead = 1.5f;
+    public float maxBrakeForce = 2.0f;
 
-    private Move move; 
-
-    // Use this for initialization
     void Start()
     {
         move = GetComponent<Move>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        /* 
-       Vector3 ahead = transform.position + (move.velocity.normalized * max_queue_ahead);
-
+    void FixedUpdate()
+    {        
        RaycastHit hit;
        float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
        Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
 
-       if (Physics.Raycast(transform.position, q * Vector3.forward, out hit, max_queue_ahead))
-       {
-           if (!hit.collider.gameObject.CompareTag("Obstacle"))
-           {
-               is_in_queue = true;
-
-               if (move.velocity.magnitude > 0.2)
-               {
-                   Vector3 brake_force = -Vector3.forward * (max_brake_force / 100);
-                   move.AddVelocity(brake_force);
-               }
-               else move.SetVelocity(Vector3.zero);
-           }
-       }
-       else is_in_queue = false;
-        */
-    }
-
-    /*       
+        // Calculating the hit point between a ray and scene colliders
+        // Agents start to brake between max ahead and min ahead
+        // In min ahead start waiting
+        if (Physics.Raycast(transform.position, q * Vector3.forward, out hit, maxAhead))
+        {
+             if (hit.collider.gameObject.CompareTag("Enemy") && hit.collider.gameObject != this)
+             {
+                 distance = (hit.point - transform.position).magnitude;
+        
+                 if (distance > minAhead)
+                 {
+                     brakeForce = -Vector3.forward * maxBrakeForce;
+                     move.AddVelocity(brakeForce);
+                 }
+                 else move.SetWaiting(true);
+             }
+            else move.SetWaiting(false);
+        }
+        else move.SetWaiting(false);
+    }    
+    
     void OnDrawGizmos()
     {
         float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
         Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
 
         Gizmos.color = Color.white;
-        Gizmos.DrawRay(transform.position, (q * Vector3.forward) * max_queue_ahead);
-    }
-    */
+        Gizmos.DrawRay(transform.position, (q * Vector3.forward) * maxAhead);
+
+        Gizmos.color = Color.grey;
+        Gizmos.DrawRay(transform.position, (q * Vector3.forward) * minAhead);
+    }   
 }

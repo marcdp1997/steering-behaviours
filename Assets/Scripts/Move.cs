@@ -10,12 +10,13 @@ public class Move : MonoBehaviour
     [SerializeField] private Vector3 velocity = Vector3.zero;
     [SerializeField] private float velocityMagnitude = 0;
     [SerializeField] private float rotation = 0.0f;
+    [SerializeField] private bool waiting = false;
 
     [Header("------ Set Values ------")]
     public GameObject target;
     public float maxVelocity = 3.0f;
     public float maxRotation = 2.0f;
-    public float maxAcceleration = 0.1f;
+    public float maxAcceleration = 3.0f;
 
     void Awake()
     {
@@ -30,13 +31,20 @@ public class Move : MonoBehaviour
             velocity = velocity.normalized * maxVelocity;
         }
 
+        // Disabling movement if agent is waiting
+        if (waiting)
+        {
+            SetRotation(0.0f);
+            SetVelocity(Vector3.zero);
+        }
+
         // Move
         velocity.y = 0.0f;
         velocityMagnitude = velocity.magnitude;
         rb.velocity = velocity;
 
         // Rotate
-        transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime, -maxRotation, maxRotation), Vector3.up);
+        transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime, -maxRotation, maxRotation), Vector3.up);   
     }
 
     public void AddVelocity(Vector3 steeringForce)
@@ -62,6 +70,16 @@ public class Move : MonoBehaviour
     public Vector3 GetVelocity()
     {
         return velocity;
+    }
+
+    public void SetWaiting(bool newWaiting)
+    {
+        waiting = newWaiting;
+    }
+
+    public bool GetWaiting()
+    {
+        return waiting;
     }
 
     void OnDrawGizmos()

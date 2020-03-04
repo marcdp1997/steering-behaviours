@@ -14,9 +14,10 @@ public class SteeringArrive : MonoBehaviour
 
     [Header("------ Read Only ------")]    
     [SerializeField] private float distanceMagnitude = 0;
+    [SerializeField] private bool arrived = false;
 
     [Header("------ Set Values ------")]
-    public float stopRadius = 0.3f;
+    public float stopRadius = 0.6f;
     public float slowRadius = 2.0f;
     public float timeAccelerating = 50.0f;
 
@@ -33,7 +34,9 @@ public class SteeringArrive : MonoBehaviour
         slowFactor = distanceMagnitude / slowRadius;
 
         if (distanceMagnitude > stopRadius)
-        { 
+        {
+            arrived = false;
+
             // Finding desired velocity
             desiredVelocity = distance.normalized * scrMove.maxVelocity;
 
@@ -60,8 +63,14 @@ public class SteeringArrive : MonoBehaviour
         else
         {
             // Path is completed
+            arrived = true;
             scrMove.SetVelocity(Vector3.zero);
         }
+    }
+
+    public bool GetArrived()
+    {
+        return arrived;
     }
 
     void OnDrawGizmos()

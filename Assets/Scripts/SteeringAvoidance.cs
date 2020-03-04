@@ -65,11 +65,11 @@ public class SteeringAvoidance : MonoBehaviour
             if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length)
                 && hit.collider.CompareTag("Obstacle"))
             {
-                Gizmos.color = Color.white;
+                Gizmos.color = Color.green;
                 Gizmos.DrawRay(hit.point, hit.normal * 100);
             }
 
-            Gizmos.color = Color.white;
+            Gizmos.color = Color.green;
             Gizmos.DrawRay(transform.position, (q * direction.normalized) * ray.length);
         }
     }
