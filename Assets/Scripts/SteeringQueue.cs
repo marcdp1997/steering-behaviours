@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SteeringQueue : MonoBehaviour
 {
-    private Move move;
-    private Vector3 brakeForce;
+    private Move scrMove;
+    private Vector3 vBrakeForce;
 
     [Header("------ Read Only -------")]
     [SerializeField] private float distance;
@@ -17,7 +17,7 @@ public class SteeringQueue : MonoBehaviour
 
     void Start()
     {
-        move = GetComponent<Move>();
+        scrMove = GetComponent<Move>();
     }
 
     void FixedUpdate()
@@ -37,14 +37,14 @@ public class SteeringQueue : MonoBehaviour
         
                  if (distance > minAhead)
                  {
-                     brakeForce = -Vector3.forward * maxBrakeForce;
-                     move.AddVelocity(brakeForce);
+                    vBrakeForce = -Vector3.forward * maxBrakeForce;
+                    scrMove.AddVelocity(vBrakeForce);
                  }
-                 else move.SetWaiting(true);
+                 else scrMove.SetWaiting(true);
              }
-            else move.SetWaiting(false);
+            else scrMove.SetWaiting(false);
         }
-        else move.SetWaiting(false);
+        else scrMove.SetWaiting(false);
     }    
     
     void OnDrawGizmos()

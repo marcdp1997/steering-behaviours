@@ -7,8 +7,8 @@ public class SteeringSeparation : MonoBehaviour
     private Move scrMove;
 
     private float force;
-    private Vector3 distance;
-    private Vector3 steeringForce;
+    private Vector3 vDistance;
+    private Vector3 vSteeringForce;
 
     public float searchRadius = 2.0f;
     public float maxRepulsion = 0.5f;
@@ -28,28 +28,28 @@ public class SteeringSeparation : MonoBehaviour
         // Calculating force depending on distance between agents (more dist, less force)
         // If agent collides with another agent that has arrived at destination, 
         // he waits because he can't reach the target
-        steeringForce = Vector3.zero;
+        vSteeringForce = Vector3.zero;
         for (int i = 0; i < hitColliders.Length; i++)
         {
             if (!hitColliders[i].gameObject.GetComponent<SteeringArrive>().GetArrived())
             {
-                distance = hitColliders[i].transform.position - transform.position;
+                vDistance = hitColliders[i].transform.position - transform.position;
 
-                if (distance.magnitude > 0) force = maxRepulsion / distance.magnitude;
+                if (vDistance.magnitude > 0) force = maxRepulsion / vDistance.magnitude;
                 else force = maxRepulsion;
 
-                steeringForce += -distance.normalized * force;
+                vSteeringForce += -vDistance.normalized * force;
             }
         }
 
         // Cap steering Force
-        if (steeringForce.magnitude > maxRepulsion)
+        if (vSteeringForce.magnitude > maxRepulsion)
         {
-            steeringForce = steeringForce.normalized * maxRepulsion;
+            vSteeringForce = vSteeringForce.normalized * maxRepulsion;
         }
 
         // Apply force
-        scrMove.AddVelocity(steeringForce);
+        scrMove.AddVelocity(vSteeringForce);
     }
 
     void OnDrawGizmos()

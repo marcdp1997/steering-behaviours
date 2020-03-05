@@ -7,14 +7,15 @@ public class SteeringArrive : MonoBehaviour
     private Move scrMove;
 
     private float slowFactor;
-    private Vector3 distance;
-    private Vector3 desiredVelocity;
-    private Vector3 desiredAccel;
-    private Vector3 steeringForce;
+    private Vector3 vDistance;
+    private Vector3 vDesiredVelocity;
+    private Vector3 vDesiredAccel;
+    private Vector3 vSteeringForce;
 
     [Header("------ Read Only ------")]    
     [SerializeField] private float distanceMagnitude = 0;
     [SerializeField] private bool arrived = false;
+    [SerializeField] private bool arriving = false;
 
     [Header("------ Set Values ------")]
     public float stopRadius = 0.6f;
@@ -28,37 +29,41 @@ public class SteeringArrive : MonoBehaviour
 	
 	void FixedUpdate()
     {
-        distance = scrMove.target.transform.position - transform.position;
-        distanceMagnitude = distance.magnitude;
+        vDistance = scrMove.GetTarget() - transform.position;
+        distanceMagnitude = vDistance.magnitude;
 
         slowFactor = distanceMagnitude / slowRadius;
 
         if (distanceMagnitude > stopRadius)
         {
             arrived = false;
+            arriving = false;
 
             // Finding desired velocity
-            desiredVelocity = distance.normalized * scrMove.maxVelocity;
+            vDesiredVelocity = vDistance.normalized * scrMove.maxVelocity;
 
             // Finding desired deceleration
             // To decelerate we only use the distance.
             if (distanceMagnitude <= slowRadius)
-                desiredVelocity *= slowFactor;
+            {
+                arriving = true;
+                vDesiredVelocity *= slowFactor;
+            }
 
             // Finding desired acceleration
             // To accelerate we divide by the time we want the object to be accelerated. 
-            desiredAccel = desiredVelocity - scrMove.GetVelocity();
+            vDesiredAccel = vDesiredVelocity - scrMove.GetVelocity();
 
             if (distanceMagnitude >= slowRadius)
-                desiredAccel /= timeAccelerating;
+                vDesiredAccel /= timeAccelerating;
 
             // Cap desired acceleration
-            if (desiredAccel.magnitude >= scrMove.maxAcceleration)
-                desiredAccel = desiredAccel.normalized * scrMove.maxAcceleration;
+            if (vDesiredAccel.magnitude >= scrMove.maxAcceleration)
+                vDesiredAccel = vDesiredAccel.normalized * scrMove.maxAcceleration;
 
             // Add steering force
-            steeringForce = desiredAccel;
-            scrMove.AddVelocity(steeringForce);
+            vSteeringForce = vDesiredAccel;
+            scrMove.AddVelocity(vSteeringForce);
         }
         else
         {
@@ -73,10 +78,15 @@ public class SteeringArrive : MonoBehaviour
         return arrived;
     }
 
+    public bool GetArriving()
+    {
+        return arriving;
+    }
+
     void OnDrawGizmos()
     {
         //Gizmos.color = Color.yellow;
-        //Gizmos.DrawWireSphere(scrMove.target.transform.position, slowRadius);
-        //Gizmos.DrawWireSphere(scrMove.target.transform.position, stopRadius);
+        //Gizmos.DrawWireSphere(scrMove.goTarget.transform.position, slowRadius);
+        //Gizmos.DrawWireSphere(scrMove.goTarget.transform.position, stopRadius);
     }
 }

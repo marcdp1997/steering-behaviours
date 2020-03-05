@@ -5,15 +5,16 @@ using UnityEngine;
 public class Move : MonoBehaviour 
 {
     private Rigidbody rb;
+    private Vector3 vTarget;
 
     [Header("------ Read Only -------")]
-    [SerializeField] private Vector3 velocity = Vector3.zero;
+    [SerializeField] private Vector3 vVelocity = Vector3.zero;
     [SerializeField] private float velocityMagnitude = 0;
     [SerializeField] private float rotation = 0.0f;
     [SerializeField] private bool waiting = false;
 
     [Header("------ Set Values ------")]
-    public GameObject target;
+    public GameObject initialTarget;
     public float maxVelocity = 3.0f;
     public float maxRotation = 2.0f;
     public float maxAcceleration = 3.0f;
@@ -21,6 +22,7 @@ public class Move : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        vTarget = initialTarget.transform.position;
     }
 
     void FixedUpdate()
@@ -28,7 +30,7 @@ public class Move : MonoBehaviour
         // Cap velocity
         if (velocityMagnitude > maxVelocity)
         {
-            velocity = velocity.normalized * maxVelocity;
+            vVelocity = vVelocity.normalized * maxVelocity;
         }
 
         // Disabling movement if agent is waiting
@@ -39,22 +41,32 @@ public class Move : MonoBehaviour
         }
 
         // Move
-        velocity.y = 0.0f;
-        velocityMagnitude = velocity.magnitude;
-        rb.velocity = velocity;
+        vVelocity.y = 0.0f;
+        velocityMagnitude = vVelocity.magnitude;
+        rb.velocity = vVelocity;
 
         // Rotate
         transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime, -maxRotation, maxRotation), Vector3.up);   
     }
 
+    public void SetTarget(Vector3 newTarget)
+    {
+        vTarget = newTarget;
+    }
+
+    public Vector3 GetTarget()
+    {
+        return vTarget;
+    }
+
     public void AddVelocity(Vector3 steeringForce)
     {
-        velocity += steeringForce;
+        vVelocity += steeringForce;
     }
 
     public void SetVelocity(Vector3 newVelocity)
     {
-        velocity = newVelocity;
+        vVelocity = newVelocity;
     }
 
     public void AddRotation(float newRotation)
@@ -69,7 +81,7 @@ public class Move : MonoBehaviour
 
     public Vector3 GetVelocity()
     {
-        return velocity;
+        return vVelocity;
     }
 
     public void SetWaiting(bool newWaiting)
@@ -85,6 +97,6 @@ public class Move : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + velocity);
+        Gizmos.DrawLine(transform.position, transform.position + vVelocity);
     }
 }

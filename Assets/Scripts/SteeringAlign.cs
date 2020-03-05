@@ -10,7 +10,7 @@ public class SteeringAlign : MonoBehaviour
 	private float velocityOrientation;
 	private float diff;
 	private float idealRotation;
-	private Vector3 moveVelocity;
+	private Vector3 vMoveVelocity;
 
     public float stopAngle = 0.2f;
 	public float slowAngle = 30.0f;
@@ -23,13 +23,13 @@ public class SteeringAlign : MonoBehaviour
 	
 	void FixedUpdate()
     {
-		moveVelocity = scrMove.GetVelocity();
+		vMoveVelocity = scrMove.GetVelocity();
 
         myOrientation = Mathf.Atan2(transform.forward.x, transform.forward.z) * Mathf.Rad2Deg;
-        velocityOrientation = Mathf.Atan2(moveVelocity.x, moveVelocity.z) * Mathf.Rad2Deg;
+        velocityOrientation = Mathf.Atan2(vMoveVelocity.x, vMoveVelocity.z) * Mathf.Rad2Deg;
         diff = Mathf.DeltaAngle(myOrientation, velocityOrientation);
 
-		if(Mathf.Abs(diff) - scrMove.maxRotation < stopAngle || moveVelocity == Vector3.zero) 
+		if(Mathf.Abs(diff) - scrMove.maxRotation < stopAngle || vMoveVelocity == Vector3.zero) 
 		{
 			scrMove.SetRotation(0.0f);
 		} 

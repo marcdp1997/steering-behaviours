@@ -15,8 +15,8 @@ public class SteeringAvoidance : MonoBehaviour
 
     private Quaternion q;
     private float angle;
-    private Vector3 direction;
-    private Vector3 steeringForce;
+    private Vector3 vDirection;
+    private Vector3 vSteeringForce;
 
     public CustomRay[] rays;
     public float maxAvoidForce = 0.1f;
@@ -36,14 +36,14 @@ public class SteeringAvoidance : MonoBehaviour
 
             foreach (CustomRay ray in rays)
             {
-                direction = Vector3.forward;
-                direction.x += ray.directionOffset;
+                vDirection = Vector3.forward;
+                vDirection.x += ray.directionOffset;
 
-                if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length)
+                if (Physics.Raycast(transform.position, q * vDirection.normalized, out hit, ray.length)
                     && hit.collider.CompareTag("Obstacle"))
                 {
-                    steeringForce = hit.normal * maxAvoidForce;
-                    scrMove.AddVelocity(steeringForce);
+                    vSteeringForce = hit.normal * maxAvoidForce;
+                    scrMove.AddVelocity(vSteeringForce);
                     break;
                 }
             }
@@ -62,8 +62,7 @@ public class SteeringAvoidance : MonoBehaviour
             Vector3 direction = Vector3.forward;
             direction.x += ray.directionOffset;
 
-            if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length)
-                && hit.collider.CompareTag("Obstacle"))
+            if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length) && hit.collider.CompareTag("Obstacle"))
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawRay(hit.point, hit.normal * 100);
