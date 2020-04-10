@@ -1,102 +1,168 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class Move : MonoBehaviour 
+[RequireComponent(typeof(Rigidbody))]
+public class Move : MonoBehaviour
 {
-    private Rigidbody rb;
-    private Vector3 vTarget;
+    // -----------------------------------------------------------------------------------
+    #region Attributes 
+    // -----------------------------------------------------------------------------------
 
-    [Header("------ Read Only -------")]
-    [SerializeField] private Vector3 vVelocity = Vector3.zero;
-    [SerializeField] private float velocityMagnitude = 0;
-    [SerializeField] private float rotation = 0.0f;
-    [SerializeField] private bool waiting = false;
+    private Rigidbody rb = null;
+    private List<SteeringBehaviour> steerings = null;
+    private float velocityMagnitude = 0.0f;
+    private float rotation = 0.0f;
+    private Vector3 steeringForceSum = Vector3.zero;
 
-    [Header("------ Set Values ------")]
-    public GameObject initialTarget;
-    public float maxVelocity = 3.0f;
+    public Text debugText = null;
+    public GameObject target = null;
+    public float maxSpeed = 8.0f;
+    public float maxSteering = 0.2f;
     public float maxRotation = 2.0f;
-    public float maxAcceleration = 3.0f;
+    [Range(0, 5)] public float stopAngle = 0.2f;
+    [Range(0, 50)] public float slowAngle = 30.0f;
+    public float timeRotating = 0.1f;
 
-    void Awake()
+    #endregion
+    // -----------------------------------------------------------------------------------
+    #region Getters and setters 
+    // -----------------------------------------------------------------------------------
+
+    public Vector3 velocity
+    {
+        get { return rb.velocity; }
+    }
+
+    #endregion
+    // -----------------------------------------------------------------------------------
+    #region MonoBehaviour
+    // -----------------------------------------------------------------------------------
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        vTarget = initialTarget.transform.position;
+        steerings = new List<SteeringBehaviour>();
     }
 
-    void FixedUpdate()
+    private void Start()
     {
+        GetSteeringBehaviors();
+    }
+
+    private void FixedUpdate()
+    {
+        UpdateSteering();
+        ApplySteering();
+        ApplyRotation();
+        DrawDebugText();
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (rb == null)
+        {
+            return;
+        }
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, transform.position + steeringForceSum);
+    }
+
+    #endregion
+    // -----------------------------------------------------------------------------------
+    #region Private manipulators 
+    // -----------------------------------------------------------------------------------
+
+    private void GetSteeringBehaviors()
+    {
+        SteeringBehaviour[] steeringBehaviors = GetComponents<SteeringBehaviour>();
+
+        for (int i = 0; i < steeringBehaviors.Length; i++)
+        {
+            steerings.Add(steeringBehaviors[i]);
+        }
+    }
+
+    private void UpdateSteering()
+    {
+        for (int i = 0; i < steerings.Count; i++)
+        {
+            if (steerings[i].enabled)
+            {
+                steerings[i].PerformSteeringBehavior();
+            }
+        }
+    }
+
+    private void ApplySteering()
+    {
+        // Get steering force average
+        steeringForceSum = Vector3.zero;
+        float priorityScale = 1;
+
+        for (int i = 0; i < steerings.Count; i++)
+        {
+            if (steerings.Count > 1)
+            {
+                priorityScale = steerings[i].priority;
+            }
+
+            steeringForceSum += steerings[i].steeringForce * priorityScale;
+        }
+
         // Cap velocity
-        if (velocityMagnitude > maxVelocity)
-        {
-            vVelocity = vVelocity.normalized * maxVelocity;
-        }
+        steeringForceSum.y = 0;
+        rb.velocity += Vector3.ClampMagnitude(steeringForceSum, maxSteering);
+        velocityMagnitude = rb.velocity.magnitude;
+    }
 
-        // Disabling movement if agent is waiting
-        if (waiting)
-        {
-            SetRotation(0.0f);
-            SetVelocity(Vector3.zero);
-        }
+    private void ApplyRotation()
+    {
+        // If the agent is in stop radius we need to stop movement BUT keep
+        // facing target's position
+        Vector3 desiredDirection;
+        if (velocity != Vector3.zero) desiredDirection = velocity;
+        else desiredDirection = target.transform.position - transform.position;
 
-        // Move
-        vVelocity.y = 0.0f;
-        velocityMagnitude = vVelocity.magnitude;
-        rb.velocity = vVelocity;
+        float myOrientation = Mathf.Atan2(transform.forward.x, transform.forward.z) * Mathf.Rad2Deg;
+        float facingOrientation = Mathf.Atan2(desiredDirection.x, desiredDirection.z) * Mathf.Rad2Deg;
+        float diff = Mathf.DeltaAngle(myOrientation, facingOrientation);
+
+        if (Mathf.Abs(diff) - maxRotation < stopAngle)
+        {
+            rotation = 0.0f;
+        }
+        else
+        {
+            float idealRotation;
+            if (Mathf.Abs(diff) > slowAngle)
+            {
+                idealRotation = maxRotation;
+            }
+            else
+            {
+                idealRotation = maxRotation * (Mathf.Abs(diff) / slowAngle);
+            }
+
+            idealRotation = idealRotation / timeRotating;
+            if (diff < 0) idealRotation *= -1.0f;
+
+            rotation += idealRotation;
+        }
 
         // Rotate
-        transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime, -maxRotation, maxRotation), Vector3.up);   
+        transform.rotation *= Quaternion.AngleAxis(Mathf.Clamp(rotation * Time.deltaTime,
+            -maxRotation, maxRotation), Vector3.up);
     }
 
-    public void SetTarget(Vector3 newTarget)
+    private void DrawDebugText()
     {
-        vTarget = newTarget;
+        debugText.text = "Velocity: " + velocity.ToString("F2") + "\n" +
+                         "Magnitude: " + velocityMagnitude.ToString("F2") + "\n" +
+                         "Rotation: " + rotation.ToString("F2") + "\n";
     }
 
-    public Vector3 GetTarget()
-    {
-        return vTarget;
-    }
-
-    public void AddVelocity(Vector3 steeringForce)
-    {
-        vVelocity += steeringForce;
-    }
-
-    public void SetVelocity(Vector3 newVelocity)
-    {
-        vVelocity = newVelocity;
-    }
-
-    public void AddRotation(float newRotation)
-    {
-        rotation += newRotation;
-    }
-
-    public void SetRotation(float newRotation)
-    {
-        rotation = newRotation;
-    }
-
-    public Vector3 GetVelocity()
-    {
-        return vVelocity;
-    }
-
-    public void SetWaiting(bool newWaiting)
-    {
-        waiting = newWaiting;
-    }
-
-    public bool GetWaiting()
-    {
-        return waiting;
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + vVelocity);
-    }
+    #endregion
+    // -----------------------------------------------------------------------------------
 }

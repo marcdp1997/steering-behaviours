@@ -1,75 +1,59 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEditor;
 
-[System.Serializable]
-public class CustomRay
+public class SteeringAvoidance : SteeringBehaviour
 {
-    public float length; // The greater this value is, the earlier the character will start acting to dodge an obstacle.
-    public float directionOffset; // Final position offset of the ray
-}
+    // -----------------------------------------------------------------------------------
+    #region Attributes 
+    // -----------------------------------------------------------------------------------
 
-public class SteeringAvoidance : MonoBehaviour
-{
-    private Move scrMove;
+    private Vector3 desiredVelocity = Vector3.zero;
+    public LayerMask avoidanceLayer;
 
-    private Quaternion q;
-    private float angle;
-    private Vector3 vDirection;
-    private Vector3 vSteeringForce;
+    #endregion
+    // -----------------------------------------------------------------------------------
+    #region MonoBehaviour 
+    // -----------------------------------------------------------------------------------
 
-    public CustomRay[] rays;
-    public float maxAvoidForce = 0.1f;
-
-    void Awake()
+    private void OnDrawGizmos()
     {
-        scrMove = GetComponent<Move>();
+        Handles.color = Color.red;
+        Handles.DrawWireDisc(transform.position, transform.up, 1.0f);
     }
 
-    void FixedUpdate()
+    #endregion
+    // -----------------------------------------------------------------------------------
+    #region Steering
+    // -----------------------------------------------------------------------------------
+
+    public override void PerformSteeringBehavior()
     {
-        if (scrMove.GetVelocity() != Vector3.zero)
+        Vector3 avoidanceForce = Vector3.zero;
+        RaycastHit hit;
+        if (Physics.SphereCast(transform.position, 1.0f, transform.forward, out hit, 10.0f, avoidanceLayer))
         {
-            RaycastHit hit;
-            angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
-            q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
-
-            foreach (CustomRay ray in rays)
+            if (Vector3.Angle(hit.normal, transform.up) > 45.0f)
             {
-                vDirection = Vector3.forward;
-                vDirection.x += ray.directionOffset;
+                avoidanceForce = Vector3.Reflect(move.velocity, hit.normal);
 
-                if (Physics.Raycast(transform.position, q * vDirection.normalized, out hit, ray.length)
-                    && hit.collider.CompareTag("Obstacle"))
+                if (Vector3.Dot(avoidanceForce, move.velocity) < -0.9f)
                 {
-                    vSteeringForce = hit.normal * maxAvoidForce;
-                    scrMove.AddVelocity(vSteeringForce);
-                    break;
+                    avoidanceForce = transform.right;
                 }
             }
         }
-    }
 
-    void OnDrawGizmos()
-    {
-        float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
-        Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
-
-        RaycastHit hit;
-
-        foreach (CustomRay ray in rays)
+        if (avoidanceForce != Vector3.zero)
         {
-            Vector3 direction = Vector3.forward;
-            direction.x += ray.directionOffset;
-
-            if (Physics.Raycast(transform.position, q * direction.normalized, out hit, ray.length) && hit.collider.CompareTag("Obstacle"))
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawRay(hit.point, hit.normal * 100);
-            }
-
-            Gizmos.color = Color.green;
-            Gizmos.DrawRay(transform.position, (q * direction.normalized) * ray.length);
+            desiredVelocity = avoidanceForce.normalized * move.maxSpeed;
+            steeringForce = desiredVelocity - move.velocity;
+        }
+        else
+        {
+            steeringForce = Vector3.zero;
         }
     }
+
+    #endregion
+    // -----------------------------------------------------------------------------------
 }

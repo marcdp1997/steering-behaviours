@@ -1,92 +1,106 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
+using UnityEditor;
 
-public class SteeringArrive : MonoBehaviour 
+public class SteeringArrive : SteeringBehaviour
 {
-    private Move scrMove;
+    // -----------------------------------------------------------------------------------
+    #region Attributes 
+    // -----------------------------------------------------------------------------------
 
-    private float slowFactor;
-    private Vector3 vDistance;
-    private Vector3 vDesiredVelocity;
-    private Vector3 vDesiredAccel;
-    private Vector3 vSteeringForce;
+    [Range(0, 1)] private float slowFactor = 1.0f;
+    private float distance = 0.0f;
+    private bool _arrived = false;
+    private bool _arriving = false;
+    private float stopOffset = 0.5f;
 
-    [Header("------ Read Only ------")]    
-    [SerializeField] private float distanceMagnitude = 0;
-    [SerializeField] private bool arrived = false;
-    [SerializeField] private bool arriving = false;
+    public Text debugText;
+    public float stopRadius = 4.0f;
+    public float slowRadius = 6.0f;
 
-    [Header("------ Set Values ------")]
-    public float stopRadius = 0.6f;
-    public float slowRadius = 2.0f;
-    public float timeAccelerating = 50.0f;
+    #endregion
+    // -----------------------------------------------------------------------------------
+    #region Getters and setters
+    // -----------------------------------------------------------------------------------
 
-	void Awake()
+    public bool arrived
     {
-        scrMove = GetComponent<Move>();
-	}
-	
-	void FixedUpdate()
+        get { return _arrived; }
+        private set { _arrived = value; }
+    }
+
+    public bool arriving
     {
-        vDistance = scrMove.GetTarget() - transform.position;
-        distanceMagnitude = vDistance.magnitude;
+        get { return _arriving; }
+        private set { _arriving = value; }
+    }
 
-        slowFactor = distanceMagnitude / slowRadius;
+    #endregion
+    // -----------------------------------------------------------------------------------
+    #region MonoBehaviour
+    // -----------------------------------------------------------------------------------
 
-        if (distanceMagnitude > stopRadius)
+    private void OnDrawGizmos()
+    {
+        if (move == null)
         {
-            arrived = false;
-            arriving = false;
-
-            // Finding desired velocity
-            vDesiredVelocity = vDistance.normalized * scrMove.maxVelocity;
-
-            // Finding desired deceleration
-            // To decelerate we only use the distance.
-            if (distanceMagnitude <= slowRadius)
-            {
-                arriving = true;
-                vDesiredVelocity *= slowFactor;
-            }
-
-            // Finding desired acceleration
-            // To accelerate we divide by the time we want the object to be accelerated. 
-            vDesiredAccel = vDesiredVelocity - scrMove.GetVelocity();
-
-            if (distanceMagnitude >= slowRadius)
-                vDesiredAccel /= timeAccelerating;
-
-            // Cap desired acceleration
-            if (vDesiredAccel.magnitude >= scrMove.maxAcceleration)
-                vDesiredAccel = vDesiredAccel.normalized * scrMove.maxAcceleration;
-
-            // Add steering force
-            vSteeringForce = vDesiredAccel;
-            scrMove.AddVelocity(vSteeringForce);
+            return;
         }
-        else
+
+        Handles.color = Color.white;
+        Handles.DrawWireDisc(move.target.transform.position, transform.up, slowRadius);
+        Handles.DrawWireDisc(move.target.transform.position, transform.up, stopRadius);
+    }
+
+    #endregion
+    // -----------------------------------------------------------------------------------
+    #region Steering 
+    // -----------------------------------------------------------------------------------
+
+    public override void PerformSteeringBehavior()
+    {
+        ResetPrevInfo();
+
+        distance = (move.target.transform.position - transform.position).magnitude;
+      
+        if (distance <= slowRadius)
         {
-            // Path is completed
+            slowFactor = (distance - stopRadius) / (slowRadius - stopRadius);
+            arriving = true;
+        }
+
+        if (distance <= stopRadius + stopOffset)
+        {
+            slowFactor = 0;
             arrived = true;
-            scrMove.SetVelocity(Vector3.zero);
         }
+
+        Vector3 desiredVelocity = (move.target.transform.position - transform.position).normalized * move.maxSpeed * slowFactor;
+        steeringForce = desiredVelocity - move.velocity;
+
+        DrawDebugText();
     }
 
-    public bool GetArrived()
+    #endregion
+    // -----------------------------------------------------------------------------------
+    #region Private manipulators
+    // -----------------------------------------------------------------------------------
+
+    private void ResetPrevInfo()
     {
-        return arrived;
+        arrived = false;
+        arriving = false;
+        slowFactor = 1;
     }
 
-    public bool GetArriving()
+    private void DrawDebugText()
     {
-        return arriving;
+        debugText.text = "Slow Factor: " + slowFactor.ToString("F2") + "\n" +
+                         "Distance: " + distance.ToString("F2") + "\n" +
+                         "Arrived: " + arrived.ToString() + "\n" +
+                         "Arriving: " + arriving.ToString() + "\n";
     }
 
-    void OnDrawGizmos()
-    {
-        //Gizmos.color = Color.yellow;
-        //Gizmos.DrawWireSphere(scrMove.goTarget.transform.position, slowRadius);
-        //Gizmos.DrawWireSphere(scrMove.goTarget.transform.position, stopRadius);
-    }
+    #endregion
+    // -----------------------------------------------------------------------------------
 }

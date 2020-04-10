@@ -30,7 +30,7 @@ public class SteeringWander : MonoBehaviour
     {
         timeToChange -= Time.deltaTime;
 
-        if (timeToChange <= 0 || scrArrive.GetArriving())
+        if (timeToChange <= 0 || scrArrive.arriving)
         {
             vCenter = transform.position;
             angle = Random.Range(0, 360);
@@ -39,7 +39,7 @@ public class SteeringWander : MonoBehaviour
             y = vCenter.y;
             z = Mathf.Sin(angle) * searchRadius + vCenter.z;
 
-            scrMove.SetTarget(new Vector3(x, y, z));
+            scrMove.target.transform.position = new Vector3(x, y, z);
             timeToChange = Random.Range(minTime, maxTime);
         }     
     }

@@ -31,7 +31,7 @@ public class SteeringSeparation : MonoBehaviour
         vSteeringForce = Vector3.zero;
         for (int i = 0; i < hitColliders.Length; i++)
         {
-            if (!hitColliders[i].gameObject.GetComponent<SteeringArrive>().GetArrived())
+            if (!hitColliders[i].gameObject.GetComponent<SteeringArrive>().arrived)
             {
                 vDistance = hitColliders[i].transform.position - transform.position;
 
@@ -47,9 +47,6 @@ public class SteeringSeparation : MonoBehaviour
         {
             vSteeringForce = vSteeringForce.normalized * maxRepulsion;
         }
-
-        // Apply force
-        scrMove.AddVelocity(vSteeringForce);
     }
 
     void OnDrawGizmos()

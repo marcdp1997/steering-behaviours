@@ -21,7 +21,8 @@ public class SteeringQueue : MonoBehaviour
     }
 
     void FixedUpdate()
-    {        
+    {      
+        /*
        RaycastHit hit;
        float angle = Mathf.Atan2(transform.forward.x, transform.forward.z);
        Quaternion q = Quaternion.AngleAxis(Mathf.Rad2Deg * angle, Vector3.up);
@@ -45,6 +46,7 @@ public class SteeringQueue : MonoBehaviour
             else scrMove.SetWaiting(false);
         }
         else scrMove.SetWaiting(false);
+        */
     }    
     
     void OnDrawGizmos()
