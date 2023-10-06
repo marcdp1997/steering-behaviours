@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SteeringQueue : MonoBehaviour
 {
-    private Move scrMove;
+    private AIController scrMove;
     private Vector3 vBrakeForce;
 
     [Header("------ Read Only -------")]
@@ -17,7 +17,7 @@ public class SteeringQueue : MonoBehaviour
 
     void Start()
     {
-        scrMove = GetComponent<Move>();
+        scrMove = GetComponent<AIController>();
     }
 
     void FixedUpdate()

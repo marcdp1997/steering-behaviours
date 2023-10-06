@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SteeringWander : MonoBehaviour
 {
-    private Move scrMove;
-    private SteeringArrive scrArrive;
+    private AIController scrMove;
+    //private SteeringArrive scrArrive;
 
     private Vector3 vCenter;
     private float angle;
@@ -19,8 +19,8 @@ public class SteeringWander : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        scrMove = GetComponent<Move>();
-        scrArrive = GetComponent<SteeringArrive>();
+        //scrMove = GetComponent<AIController>();
+        //scrArrive = GetComponent<SteeringArrive>();
 
         timeToChange = Random.Range(minTime, maxTime);
     }
@@ -28,20 +28,20 @@ public class SteeringWander : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        timeToChange -= Time.deltaTime;
+        //timeToChange -= Time.deltaTime;
 
-        if (timeToChange <= 0 || scrArrive.arriving)
-        {
-            vCenter = transform.position;
-            angle = Random.Range(0, 360);
+        //if (timeToChange <= 0 || scrArrive.arriving)
+        //{
+        //    vCenter = transform.position;
+        //    angle = Random.Range(0, 360);
 
-            x = Mathf.Cos(angle) * searchRadius + vCenter.x;
-            y = vCenter.y;
-            z = Mathf.Sin(angle) * searchRadius + vCenter.z;
+        //    x = Mathf.Cos(angle) * searchRadius + vCenter.x;
+        //    y = vCenter.y;
+        //    z = Mathf.Sin(angle) * searchRadius + vCenter.z;
 
-            scrMove.target.transform.position = new Vector3(x, y, z);
-            timeToChange = Random.Range(minTime, maxTime);
-        }     
+        //    scrMove.target.transform.position = new Vector3(x, y, z);
+        //    timeToChange = Random.Range(minTime, maxTime);
+        //}     
     }
 
     void OnDrawGizmos()

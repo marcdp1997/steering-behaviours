@@ -1,57 +1,58 @@
 ﻿using UnityEngine;
-using UnityEditor;
+using System;
+using System.Collections.Generic;
 
 public class SteeringAvoidance : SteeringBehaviour
 {
     // -----------------------------------------------------------------------------------
     #region Attributes 
-    // -----------------------------------------------------------------------------------
 
-    private Vector3 desiredVelocity = Vector3.zero;
-    public LayerMask avoidanceLayer;
-
-    #endregion
-    // -----------------------------------------------------------------------------------
-    #region MonoBehaviour 
-    // -----------------------------------------------------------------------------------
-
-    private void OnDrawGizmos()
+    [Serializable] 
+    public struct Ray
     {
-        Handles.color = Color.red;
-        Handles.DrawWireDisc(transform.position, transform.up, 1.0f);
+        public float angleOffset;
+        public float length;
     }
 
+    [SerializeField] private float maxAvoidanceForce = 5;
+    [SerializeField] private LayerMask avoidanceLayer;
+    [SerializeField] private List<Ray> rays;
+
     #endregion
     // -----------------------------------------------------------------------------------
-    #region Steering
-    // -----------------------------------------------------------------------------------
+    #region Methods
 
-    public override void PerformSteeringBehavior()
+    public override void UpdateSteeringBehavior()
     {
-        Vector3 avoidanceForce = Vector3.zero;
-        RaycastHit hit;
-        if (Physics.SphereCast(transform.position, 1.0f, transform.forward, out hit, 10.0f, avoidanceLayer))
-        {
-            if (Vector3.Angle(hit.normal, transform.up) > 45.0f)
-            {
-                avoidanceForce = Vector3.Reflect(move.velocity, hit.normal);
+        base.UpdateSteeringBehavior();
 
-                if (Vector3.Dot(avoidanceForce, move.velocity) < -0.9f)
-                {
-                    avoidanceForce = transform.right;
-                }
+        for (int i = 0; i < rays.Count; i++)
+        {
+            Vector3 direction = Quaternion.AngleAxis(rays[i].angleOffset, Vector3.up) * transform.forward * rays[i].length;
+            RaycastHit[] hits = Physics.RaycastAll(transform.position, direction, direction.magnitude, avoidanceLayer);
+            int mostThreatening = FindMostThreatening(hits, rays[i].length);
+
+            if (hits.Length > 0)
+            {
+                steeringForce = (transform.position + direction) - (hits[mostThreatening].collider.transform.position);
+                steeringForce = steeringForce.normalized * maxAvoidanceForce;
+                break;
             }
         }
+    }
 
-        if (avoidanceForce != Vector3.zero)
+    private int FindMostThreatening(RaycastHit[] hits, float rayLength)
+    {
+        int mostThreatening = 0;
+        float shortestDistance = rayLength;
+
+        for (int j = 0; j < hits.Length; j++)
         {
-            desiredVelocity = avoidanceForce.normalized * move.maxSpeed;
-            steeringForce = desiredVelocity - move.velocity;
+            float distance = (transform.position - hits[j].transform.position).magnitude;
+            if (distance < shortestDistance) mostThreatening = j;
         }
-        else
-        {
-            steeringForce = Vector3.zero;
-        }
+
+        return mostThreatening;
     }
 
     #endregion

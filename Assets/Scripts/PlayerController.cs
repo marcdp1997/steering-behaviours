@@ -2,15 +2,16 @@
 
 public class PlayerController : MonoBehaviour
 {
+    // -----------------------------------------------------------------------------------
     #region Attributes   
+
+    [SerializeField] private float speed = 10.0f;
 
     private Rigidbody rb;
     private Vector3 movement;
 
-    public float speed = 10.0f;
-
     #endregion
-
+    // -----------------------------------------------------------------------------------
     #region MonoBehaviour  
 
     private void Awake()
@@ -30,7 +31,7 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
-
+    // -----------------------------------------------------------------------------------
     #region Private Manipulators
 
     private void CheckInput()
@@ -45,4 +46,5 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
+    // -----------------------------------------------------------------------------------
 }
