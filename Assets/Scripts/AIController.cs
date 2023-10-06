@@ -77,7 +77,7 @@ public class AIController : MonoBehaviour
 
         for (int i = 0; i < steerings.Count; i++)
         {
-            if (steerings[i].GetPriority() > currPriority)
+            if (steerings[i].GetSteeringForce() != Vector3.zero && steerings[i].GetPriority() > currPriority)
             {
                 steeringForceSum = Vector3.zero;
                 currPriority = steerings[i].GetPriority();
@@ -94,7 +94,7 @@ public class AIController : MonoBehaviour
 
     private void ApplyRotation()
     {
-        if (rb.velocity == Vector3.zero) return;
+        if (rb.velocity.magnitude <= 0.2f) return;
 
         float myOrientation = Mathf.Atan2(transform.forward.x, transform.forward.z) * Mathf.Rad2Deg;
         float facingOrientation = Mathf.Atan2(rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg;
