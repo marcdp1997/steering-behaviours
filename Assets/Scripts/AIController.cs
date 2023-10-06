@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -45,8 +44,10 @@ public class AIController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (rb == null) return;
+
         Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, transform.position + steeringForceSum);
+        Gizmos.DrawLine(transform.position, transform.position + rb.velocity);
     }
 
     #endregion
@@ -93,14 +94,10 @@ public class AIController : MonoBehaviour
 
     private void ApplyRotation()
     {
-        // If the agent is in stop radius we need to stop movement BUT keep
-        // facing target's position
-        Vector3 desiredDirection;
-        if (rb.velocity != Vector3.zero) desiredDirection = rb.velocity;
-        else desiredDirection = target.transform.position - transform.position;
+        if (rb.velocity == Vector3.zero) return;
 
         float myOrientation = Mathf.Atan2(transform.forward.x, transform.forward.z) * Mathf.Rad2Deg;
-        float facingOrientation = Mathf.Atan2(desiredDirection.x, desiredDirection.z) * Mathf.Rad2Deg;
+        float facingOrientation = Mathf.Atan2(rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg;
         float diff = Mathf.DeltaAngle(myOrientation, facingOrientation);
 
         if (Mathf.Abs(diff) - maxRotation < stopAngle)
@@ -109,16 +106,7 @@ public class AIController : MonoBehaviour
         }
         else
         {
-            float idealRotation;
-            if (Mathf.Abs(diff) > slowAngle)
-            {
-                idealRotation = maxRotation;
-            }
-            else
-            {
-                idealRotation = maxRotation * (Mathf.Abs(diff) / slowAngle);
-            }
-
+            float idealRotation = Mathf.Abs(diff) > slowAngle ? maxRotation : maxRotation * (Mathf.Abs(diff) / slowAngle);
             idealRotation /= timeRotating;
             if (diff < 0) idealRotation *= -1.0f;
 

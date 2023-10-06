@@ -4,9 +4,6 @@ using System.Collections.Generic;
 
 public class SteeringAvoidance : SteeringBehaviour
 {
-    // -----------------------------------------------------------------------------------
-    #region Attributes 
-
     [Serializable] 
     public struct Ray
     {
@@ -17,10 +14,6 @@ public class SteeringAvoidance : SteeringBehaviour
     [SerializeField] private float maxAvoidanceForce = 5;
     [SerializeField] private LayerMask avoidanceLayer;
     [SerializeField] private List<Ray> rays;
-
-    #endregion
-    // -----------------------------------------------------------------------------------
-    #region Methods
 
     public override void UpdateSteeringBehavior()
     {
@@ -34,7 +27,7 @@ public class SteeringAvoidance : SteeringBehaviour
 
             if (hits.Length > 0)
             {
-                steeringForce = (transform.position + direction) - (hits[mostThreatening].collider.transform.position);
+                steeringForce = (transform.position + direction) - hits[mostThreatening].collider.transform.position;
                 steeringForce = steeringForce.normalized * maxAvoidanceForce;
                 break;
             }
@@ -54,7 +47,4 @@ public class SteeringAvoidance : SteeringBehaviour
 
         return mostThreatening;
     }
-
-    #endregion
-    // -----------------------------------------------------------------------------------
 }

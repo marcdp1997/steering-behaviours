@@ -2,14 +2,7 @@ using UnityEngine;
 
 public class SteeringFlee : SteeringBehaviour
 {
-    // -----------------------------------------------------------------------------------
-    #region Attributes 
-
     [SerializeField] private float maxDistance = 5.0f;
-
-    #endregion
-    // -----------------------------------------------------------------------------------
-    #region Steering  
 
     public override void UpdateSteeringBehavior()
     {
@@ -21,7 +14,4 @@ public class SteeringFlee : SteeringBehaviour
             steeringForce = desiredVelocity - aiController.GetVelocity();
         }
     }
-
-    #endregion
-    // -----------------------------------------------------------------------------------
 }
