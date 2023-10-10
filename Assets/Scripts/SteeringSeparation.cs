@@ -5,7 +5,6 @@ public class SteeringSeparation : SteeringBehaviour
 {
     [SerializeField] private float radius = 2.0f;
     [SerializeField] private float maxSeparationForce = 8.0f;
-    [SerializeField] private LayerMask separationLayer;
 
     protected override void OnDrawGizmos()
     {
@@ -21,7 +20,7 @@ public class SteeringSeparation : SteeringBehaviour
     {
         base.UpdateSteeringBehavior();
 
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius, separationLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius, 1 << LayerMask.NameToLayer("AI"));
 
         // Calculating force depending on distance between agents (more dist, less force)
         // If agent collides with another agent that has arrived at destination, 

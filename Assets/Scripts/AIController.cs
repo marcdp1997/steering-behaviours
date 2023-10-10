@@ -89,7 +89,6 @@ public class AIController : MonoBehaviour
     
         steeringSum.y = 0;
         steeringSum = Vector3.ClampMagnitude(steeringSum, maxSteeringForce);
-        //steeringSum /= rb.mass;
         rb.velocity = Vector3.ClampMagnitude(rb.velocity + steeringSum, maxSpeed);
     }
 
@@ -128,6 +127,8 @@ public class AIController : MonoBehaviour
     public float GetMaxSpeed() { return maxSpeed; }
 
     public Vector3 GetVelocity() { return rb.velocity; }
+
+    public Vector3 GetSteeringSum() { return steeringSum; }
 
     #endregion
     // -----------------------------------------------------------------------------------

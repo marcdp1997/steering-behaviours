@@ -11,8 +11,7 @@ public class SteeringAvoidance : SteeringBehaviour
         public float length;
     }
 
-    [SerializeField] private float maxAvoidanceForce = 5;
-    [SerializeField] private LayerMask avoidanceLayer;
+    [SerializeField] private float maxAvoidanceForce = 5.0f;
     [SerializeField] private List<Ray> rays;
 
     protected override void OnDrawGizmos()
@@ -42,7 +41,7 @@ public class SteeringAvoidance : SteeringBehaviour
         {
             float dynamicLength = rays[i].length * (aiController.GetVelocity().magnitude / aiController.GetMaxSpeed());
             Vector3 direction = Quaternion.AngleAxis(rays[i].angleOffset, Vector3.up) * transform.forward * dynamicLength;
-            RaycastHit[] hits = Physics.RaycastAll(transform.position, direction, direction.magnitude, avoidanceLayer);
+            RaycastHit[] hits = Physics.RaycastAll(transform.position, direction, direction.magnitude, 1 << LayerMask.NameToLayer("Obstacle"));
             int mostThreatening = FindMostThreatening(hits, rays[i].length);
 
             if (hits.Length > 0)

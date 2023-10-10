@@ -16,27 +16,27 @@ public class SteeringWander : SteeringBehaviour
 
         if (!drawGizmos) return;
 
-        Vector3 circleCenter = transform.forward * circleDistance;
+        Vector3 circleCenter = transform.position + transform.forward * circleDistance;
 
         Handles.color = Color.cyan;
-        Handles.DrawWireDisc(transform.position + circleCenter, transform.up, wanderForce);
+        Handles.DrawWireDisc(circleCenter, transform.up, wanderForce);
 
         Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(transform.position, transform.position + circleCenter);
+        Gizmos.DrawLine(transform.position, circleCenter);
 
         if (displacement == Vector3.zero) return;
 
-        Gizmos.DrawLine(transform.position + circleCenter, transform.position + circleCenter + displacement);
+        Gizmos.DrawLine(circleCenter, circleCenter + displacement);
     }
 
     public override void UpdateSteeringBehavior()
     {
         base.UpdateSteeringBehavior();
 
-        Vector3 circleCenter = transform.forward * circleDistance;
+        Vector3 ahead = transform.forward * circleDistance;
         displacement = Quaternion.AngleAxis(currAngle, Vector3.up) * (Vector3.forward * wanderForce);
         currAngle += (Random.value * maxAngle) - (maxAngle * 0.5f);
 
-        steeringForce = circleCenter + displacement;
+        steeringForce = ahead + displacement;
     }
 }
