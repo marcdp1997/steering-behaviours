@@ -7,7 +7,7 @@ public class AIController : MonoBehaviour
     // -----------------------------------------------------------------------------------
     #region Attributes 
 
-    [SerializeField] private Transform target;
+    [SerializeField] private PlayerController target;
     [SerializeField] private float maxSpeed = 8.0f;
     [SerializeField] private float maxSteeringForce = 0.2f;
     [SerializeField] private float maxRotation = 2.0f;
@@ -18,7 +18,7 @@ public class AIController : MonoBehaviour
     private Rigidbody rb;
     private List<SteeringBehaviour> steerings;
     private float rotation;
-    private Vector3 steeringForceSum;
+    private Vector3 steeringSum;
 
     #endregion
     // -----------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ public class AIController : MonoBehaviour
     {
         if (rb == null) return;
 
-        Gizmos.color = Color.blue;
+        Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + rb.velocity);
     }
 
@@ -72,24 +72,25 @@ public class AIController : MonoBehaviour
     {
         // Apply a steering force to the AI, in the direction of the desired acceleration,
         // truncated to the maximum allowed force.
-        steeringForceSum = Vector3.zero;
+        steeringSum = Vector3.zero;
         int currPriority = 0;
 
         for (int i = 0; i < steerings.Count; i++)
         {
             if (steerings[i].GetSteeringForce() != Vector3.zero && steerings[i].GetPriority() > currPriority)
             {
-                steeringForceSum = Vector3.zero;
+                steeringSum = Vector3.zero;
                 currPriority = steerings[i].GetPriority();
             }
 
             if (steerings[i].GetPriority() == currPriority)
-                steeringForceSum += steerings[i].GetSteeringForce();
+                steeringSum += steerings[i].GetSteeringForce();
         }
     
-        steeringForceSum.y = 0;
-        steeringForceSum = Vector3.ClampMagnitude(steeringForceSum, maxSteeringForce);
-        rb.velocity = Vector3.ClampMagnitude(rb.velocity + steeringForceSum, maxSpeed);
+        steeringSum.y = 0;
+        steeringSum = Vector3.ClampMagnitude(steeringSum, maxSteeringForce);
+        //steeringSum /= rb.mass;
+        rb.velocity = Vector3.ClampMagnitude(rb.velocity + steeringSum, maxSpeed);
     }
 
     private void ApplyRotation()
@@ -122,7 +123,7 @@ public class AIController : MonoBehaviour
     // -----------------------------------------------------------------------------------
     #region Getters & Setters
 
-    public Transform GetTarget() { return target; }
+    public PlayerController GetTarget() { return target; }
 
     public float GetMaxSpeed() { return maxSpeed; }
 

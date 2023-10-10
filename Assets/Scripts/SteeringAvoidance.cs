@@ -15,13 +15,33 @@ public class SteeringAvoidance : SteeringBehaviour
     [SerializeField] private LayerMask avoidanceLayer;
     [SerializeField] private List<Ray> rays;
 
+    protected override void OnDrawGizmos()
+    {
+        base.OnDrawGizmos();
+
+        if (!drawGizmos) return;
+
+        for (int i = 0; i < rays.Count; i++)
+        {
+            Gizmos.color = Color.cyan;
+
+            float dynamicLength = rays[i].length;
+            if (aiController != null)
+                dynamicLength *= aiController.GetVelocity().magnitude / aiController.GetMaxSpeed();
+
+            Vector3 direction = Quaternion.AngleAxis(rays[i].angleOffset, Vector3.up) * transform.forward * dynamicLength;
+            Gizmos.DrawLine(transform.position, transform.position + direction);
+        }
+    }
+
     public override void UpdateSteeringBehavior()
     {
         base.UpdateSteeringBehavior();
 
         for (int i = 0; i < rays.Count; i++)
         {
-            Vector3 direction = Quaternion.AngleAxis(rays[i].angleOffset, Vector3.up) * transform.forward * rays[i].length;
+            float dynamicLength = rays[i].length * (aiController.GetVelocity().magnitude / aiController.GetMaxSpeed());
+            Vector3 direction = Quaternion.AngleAxis(rays[i].angleOffset, Vector3.up) * transform.forward * dynamicLength;
             RaycastHit[] hits = Physics.RaycastAll(transform.position, direction, direction.magnitude, avoidanceLayer);
             int mostThreatening = FindMostThreatening(hits, rays[i].length);
 

@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEditor;
 
 public class SteeringSeparation : SteeringBehaviour
 {
@@ -8,10 +7,14 @@ public class SteeringSeparation : SteeringBehaviour
     [SerializeField] private float maxSeparationForce = 8.0f;
     [SerializeField] private LayerMask separationLayer;
 
-    private void OnDrawGizmos()
+    protected override void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, radius);
+        base.OnDrawGizmos();
+
+        if (!drawGizmos) return;
+
+        Handles.color = Color.cyan;
+        Handles.DrawWireDisc(transform.position, transform.up, radius);
     }
 
     public override void UpdateSteeringBehavior()

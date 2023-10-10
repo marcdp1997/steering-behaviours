@@ -2,22 +2,15 @@
 
 public class PlayerController : MonoBehaviour
 {
-    // -----------------------------------------------------------------------------------
-    #region Attributes   
-
     [SerializeField] private float speed = 10.0f;
 
     private Rigidbody rb;
-    private Vector3 movement;
-
-    #endregion
-    // -----------------------------------------------------------------------------------
-    #region MonoBehaviour  
+    private Vector3 velocity;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        movement = Vector3.zero;
+        velocity = Vector3.zero;
     }
 
     private void Update()
@@ -30,21 +23,17 @@ public class PlayerController : MonoBehaviour
         ApplyMovement();
     }
 
-    #endregion
-    // -----------------------------------------------------------------------------------
-    #region Private Manipulators
-
     private void CheckInput()
     {
-        movement.x = Input.GetAxisRaw("Horizontal") * speed;
-        movement.z = Input.GetAxisRaw("Vertical") * speed;
+        velocity.x = Input.GetAxisRaw("Horizontal") * speed;
+        velocity.z = Input.GetAxisRaw("Vertical") * speed;
     }
 
     private void ApplyMovement()
     {
-        rb.velocity = movement;
+        rb.velocity = velocity;
     }
 
-    #endregion
-    // -----------------------------------------------------------------------------------
+    public Vector3 GetVelocity() { return velocity; }
+
 }
