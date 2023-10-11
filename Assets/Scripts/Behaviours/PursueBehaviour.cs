@@ -20,7 +20,7 @@ public class PursueBehaviour : Steering
         steeringForce = Vector3.zero;
 
         Vector3 distance = target.GetPosition() - owner.GetPosition();
-        float futureAhead = distance.magnitude / owner.GetMaxSpeed();
+        float futureAhead = distance.magnitude / target.GetMaxSpeed();
         targetFuturePos = target.GetPosition() + target.GetVelocity() * futureAhead;
 
         Vector3 desiredVelocity = (targetFuturePos - owner.GetPosition()).normalized * owner.GetMaxSpeed();
