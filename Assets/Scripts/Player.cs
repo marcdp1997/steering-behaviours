@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+[RequireComponent(typeof(Rigidbody))]
+public class Player : MonoBehaviour, ICharacterInfo
 {
     [SerializeField] private float speed = 10.0f;
 
@@ -34,6 +37,11 @@ public class PlayerController : MonoBehaviour
         rb.velocity = velocity;
     }
 
-    public Vector3 GetVelocity() { return velocity; }
+    public Vector3 GetPosition() { return transform.position; }
 
+    public float GetMaxSpeed() { return speed; }
+
+    public Vector3 GetVelocity() { return rb.velocity; }
+
+    public Vector3 GetForward() { return transform.forward; }
 }

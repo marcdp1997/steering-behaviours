@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-public class SteeringWander : SteeringBehaviour
+public class WanderBehaviour : Steering
 {
     [SerializeField] private float circleDistance = 7.0f;
     [SerializeField] private float wanderForce = 4.0f;
@@ -24,19 +24,20 @@ public class SteeringWander : SteeringBehaviour
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(transform.position, circleCenter);
 
-        if (displacement == Vector3.zero) return;
+        if (!Application.isPlaying) return;
 
         Gizmos.DrawLine(circleCenter, circleCenter + displacement);
     }
 
-    public override void UpdateSteeringBehavior()
+    public Vector3 DoWander(ICharacterInfo owner)
     {
-        base.UpdateSteeringBehavior();
+        steeringForce = Vector3.zero;
 
-        Vector3 ahead = transform.forward * circleDistance;
+        Vector3 ahead = owner.GetVelocity().normalized * circleDistance;
         displacement = Quaternion.AngleAxis(currAngle, Vector3.up) * (Vector3.forward * wanderForce);
         currAngle += (Random.value * maxAngle) - (maxAngle * 0.5f);
 
         steeringForce = ahead + displacement;
+        return steeringForce;
     }
 }
