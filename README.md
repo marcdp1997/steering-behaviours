@@ -3,7 +3,7 @@ Arrive, seek, flee, pursuit, evade, wander, obstacle avoidance, separation betwe
 
 ### How it works:                                              
 In this project there are 3 scenes for now:
-1) **HunterPrey**: A hunter is trying to catch some preys. If he gets too close, they will evade him.                                       
+1) **HunterPrey**: Various hunters are trying to catch some preys. If they get too close, preys will evade them.                                       
    _Steerings used: wander, pursuit, evade and separation._
 2) **CustomerQueue**: Watch some customers try to go through a small corridor.                           
    _Steerings used: arrive, separation, avoidance and queue._
