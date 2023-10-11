@@ -15,7 +15,7 @@ public class PursueBehaviour : Steering
         Handles.DrawWireDisc(targetFuturePos, Vector3.up, 0.25f);
     }
 
-    public Vector3 DoPursue(ICharacterInfo owner, ICharacterInfo target)
+    public Vector3 DoPursuit(ICharacterInfo owner, ICharacterInfo target)
     {
         steeringForce = Vector3.zero;
 

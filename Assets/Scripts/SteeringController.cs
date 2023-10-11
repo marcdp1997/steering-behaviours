@@ -36,7 +36,7 @@ public class SteeringController : MonoBehaviour
     public Vector3 Avoidance() { return avoidance.DoAvoidance(owner); }
     public Vector3 Evade(ICharacterInfo target) { return evade.DoEvade(owner, target); }
     public Vector3 Flee(Vector3 target) { return flee.DoFlee(owner, target); }
-    public Vector3 Pursue(ICharacterInfo target) { return pursue.DoPursue(owner, target); }
+    public Vector3 Pursuit(ICharacterInfo target) { return pursue.DoPursuit(owner, target); }
     public Vector3 Queue(Vector3 steeringForceSum) { return queue.DoQueue(owner, steeringForceSum); }
     public Vector3 Seek(Vector3 target) { return seek.DoSeek(owner, target); }
     public Vector3 Separation() { return separation.DoSeparation(owner); }

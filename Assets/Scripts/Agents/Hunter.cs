@@ -46,7 +46,7 @@ public class Hunter : Agent
                 Destroy(currPrey.gameObject);
             }
 
-            steeringForceSum += steering.Pursue(currPrey);
+            steeringForceSum += steering.Pursuit(currPrey);
             currStamina -= 2;
 
             if (currStamina <= 0)

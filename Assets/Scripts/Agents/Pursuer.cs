@@ -9,7 +9,7 @@ public class Pursuer : Agent
 
     protected override void CalculateSteeringSum()
     {
-        steeringForceSum += steering.Pursue(target);
+        steeringForceSum += steering.Pursuit(target);
         steeringForceSum += steering.Avoidance();
         steeringForceSum += steering.Separation();
     }
