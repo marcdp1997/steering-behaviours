@@ -10,25 +10,24 @@ public class Hunter : Agent
     [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private Material restingMaterial;
     [SerializeField] private Material huntingMaterial;
-    [SerializeField] private GameObject preysRoot;
+    [SerializeField] private GameObject huntersRoot;
 
     private List<Prey> preys;
     private Prey currPrey;
-    private bool resting;
+    private bool resting = true;
     private int currStamina;
 
     protected override void Awake()
     {
         base.Awake();
         preys = new List<Prey>();
-        preys = preysRoot.GetComponentsInChildren<Prey>().ToList();
+        preys = huntersRoot.GetComponentsInChildren<Prey>().ToList();
+        currStamina = Random.Range(0, maxStamina / 2);
     }
 
     protected override void CalculateSteeringSum()
     {
         meshRenderer.material = resting ? restingMaterial : huntingMaterial;
-
-        steeringForceSum += steering.Avoidance();
 
         if (resting)
         {
@@ -36,6 +35,7 @@ public class Hunter : Agent
 
             if (currStamina >= maxStamina) resting = false;
         }
+        else currPrey = GetClosestPrey();
 
         if (currPrey != null && !resting)
         {
@@ -44,6 +44,7 @@ public class Hunter : Agent
             {
                 preys.Remove(currPrey);
                 Destroy(currPrey.gameObject);
+                currPrey = GetClosestPrey();
             }
 
             steeringForceSum += steering.Pursuit(currPrey);
@@ -58,7 +59,6 @@ public class Hunter : Agent
         else
         {
             steeringForceSum += steering.Wander();
-            currPrey = GetClosestPrey();
         }
     }
 
@@ -66,16 +66,19 @@ public class Hunter : Agent
     {
         if (preys.Count <= 0) return null;
 
-        float currDistance = (transform.position - preys[0].GetPosition()).magnitude;
-        Prey closestPrey = preys[0];
+        float currDistance = 0;
+        Prey closestPrey = null;
 
-        for (int i = 1; i < preys.Count; i++)
+        for (int i = 0; i < preys.Count; i++)
         {
-            float distance = (transform.position - preys[i].GetPosition()).magnitude;
-            if (distance < currDistance)
+            if (preys[i] != null)
             {
-                currDistance = distance;
-                closestPrey = preys[i];
+                float distance = (transform.position - preys[i].GetPosition()).magnitude;
+                if (distance < currDistance || closestPrey == null)
+                {
+                    currDistance = distance;
+                    closestPrey = preys[i];
+                }
             }
         }
 
